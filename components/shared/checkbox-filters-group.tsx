@@ -73,7 +73,7 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder={searchInputPlaceholder}
-            className="bg-gray-50 border-none"
+            className="bg-gray-50"
           />
         </div>
       )}
