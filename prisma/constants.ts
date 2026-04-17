@@ -24,90 +24,90 @@ export const categories = [
 
 export const ingredients = [
   {
-    ingridientName: "Cheese Stuffed Crust",
+    ingredientName: "Cheese Stuffed Crust",
     price: 4,
-    imageUrl: "..public//ingridients/crust.png",
+    imageUrl: "/ingredients/crust.png",
   },
   {
-    ingridientName: "Creamy Mozzarella",
+    ingredientName: "Creamy Mozzarella",
     price: 3,
-    imageUrl: "..public//ingridients/mozzarella.png",
+    imageUrl: "/ingredients/mozzarella.png",
   },
   {
-    ingridientName: "Cheddar & Parmesan",
+    ingredientName: "Cheddar & Parmesan",
     price: 2,
-    imageUrl: "..public//ingridients/cheddar.png",
+    imageUrl: "/ingredients/cheddar.png",
   },
   {
-    ingridientName: "Spicy Jalapeño Peppers",
+    ingredientName: "Spicy Jalapeño Peppers",
     price: 2,
-    imageUrl: "..public//ingridients/peppers.png",
+    imageUrl: "/ingredients/peppers.png",
   },
   {
-    ingridientName: "Tender Chicken",
+    ingredientName: "Tender Chicken",
     price: 4,
-    imageUrl: "..public//ingridients/chicken.png",
+    imageUrl: "/ingredients/chicken.png",
   },
   {
-    ingridientName: "Mushrooms",
+    ingredientName: "Mushrooms",
     price: 3,
-    imageUrl: "..public//ingridients/mushrooms.png",
+    imageUrl: "/ingredients/mushrooms.png",
   },
   {
-    ingridientName: "Ham",
+    ingredientName: "Ham",
     price: 2,
-    imageUrl: "..public//ingridients/ham.png",
+    imageUrl: "/ingredients/ham.png",
   },
 ].map((obj, index) => ({ id: index + 1, ...obj }));
 
 export const products = [
   {
     productName: "Caffè Latte",
-    imageUrl: "../public/other-products/latte.webp",
+    imageUrl: "/other-products/latte.webp",
     categoryId: 2,
   },
   {
     productName: "Ham & Cheese Sandwich",
-    imageUrl: "../public/other-products/cheese-sandwich.webp",
+    imageUrl: "/other-products/cheese-sandwich.webp",
     categoryId: 3,
   },
 
   {
     productName: "Oven-Baked Potatoes with Sauce 🌱",
-    imageUrl: "../public/other-products/potato.webp",
+    imageUrl: "/other-products/potato.webp",
     categoryId: 3,
   },
   {
     productName: "Dodster",
-    imageUrl: "../public/other-products/dobster.webp",
+    imageUrl: "/other-products/dobster.webp",
     categoryId: 3,
   },
 
   {
     productName: "Banana Milkshake",
 
-    imageUrl: "../public/other-products/banana__coctail.webp",
+    imageUrl: "/other-products/banana__coctail.webp",
     categoryId: 4,
   },
   {
     productName: "Caramel Apple Milkshake",
-    imageUrl: "../public/other-products/caramel__coctail.webp",
+    imageUrl: "/other-products/caramel__coctail.webp",
     categoryId: 4,
   },
 
   {
     productName: "Caramel Cappuccino",
-    imageUrl: "../public/other-products/caramel__cappuchino.webp",
+    imageUrl: "/other-products/caramel__cappuchino.webp",
     categoryId: 5,
   },
   {
     productName: "Coconut Latte",
-    imageUrl: "../public/other-products/late.webp",
+    imageUrl: "/other-products/late.webp",
     categoryId: 5,
   },
   {
     productName: "Americano",
-    imageUrl: "../public/other-products/americano.webp",
+    imageUrl: "/other-products/americano.webp",
     categoryId: 5,
   },
 ];

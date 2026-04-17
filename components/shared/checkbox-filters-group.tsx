@@ -2,38 +2,67 @@
 
 import React, { useState } from "react";
 import { FilterChecboxProps, FilterCheckbox } from "./filter-checkbox";
-import { Input } from "../ui";
+import { Input, Skeleton } from "../ui";
 
 type Item = FilterChecboxProps;
 
 interface Props {
   title: string;
-  ingredients: Item[];
+  items: Item[];
   defaultIngredients?: Item[];
   limit?: number;
+  loading?: boolean;
   searchInputPlaceholder?: string;
-  onChange?: (values: string[]) => void;
+  onClickCheckbox?: (id: string) => void;
   defaultValues?: string[];
   className?: string;
+  selectedIds?: Set<string>;
+  name?: string;
 }
 
 export const CheckboxFiltersGroup: React.FC<Props> = ({
   title,
-  ingredients,
+  items,
   defaultIngredients = [],
   limit = 5,
   searchInputPlaceholder = "Search...",
-  onChange,
+  loading,
+  onClickCheckbox,
+  selectedIds,
+  name,
   className,
 }) => {
   const [showAll, setShowAll] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  if (loading) {
+    return (
+      <div>
+        <p className="font-bold mb-3"></p>
+
+        {[...Array(limit).fill(0)].map((_, index) => (
+          <Skeleton key={index} className="h-4 mb-4 rounded-[8px]"></Skeleton>
+        ))}
+
+        <Skeleton className="h-4 w-28 mb-4 rounded-[8px]"></Skeleton>
+      </div>
+    );
+  }
+
+  const sortedItems = [...items].sort((a, b) => {
+    const aSelected = selectedIds?.has(a.value) ? 1 : 0;
+    const bSelected = selectedIds?.has(b.value) ? 1 : 0;
+    return bSelected - aSelected;
+  });
+
+  const filteredAndSortedItems = sortedItems.filter((ingredient) =>
+    ingredient.text.toLowerCase().includes(searchValue.toLowerCase()),
+  );
+
   const ingredientsList = showAll
-    ? ingredients.filter((ingredient) =>
-        ingredient.text.toLowerCase().includes(searchValue.toLowerCase()),
-      )
-    : defaultIngredients.slice(0, limit);
+    ? filteredAndSortedItems
+    : (defaultIngredients && sortedItems).slice(0, limit);
+
   return (
     <div className={className}>
       <p className="font-bold mb-3">{title}</p>
@@ -54,11 +83,12 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
           {ingredientsList.map((ingredient) => (
             <FilterCheckbox
               key={ingredient.value}
-              onCheckedChange={(ids) => console.log(ids)}
-              checked={false}
+              checked={selectedIds?.has(ingredient.value)}
               value={ingredient.value}
               text={ingredient.text}
               endAdornment={ingredient.endAdornment}
+              onCheckedChange={() => onClickCheckbox?.(ingredient.value)}
+              name={name}
             />
           ))}
         </div>
@@ -66,7 +96,7 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
         <h1 className="text-red-500 capitalize">not foundet!!</h1>
       )}
 
-      {ingredients.length > limit && (
+      {items.length > limit && (
         <div className={showAll ? "border-t border-t-neutral-100 mt-4" : ""}>
           <button
             className="text-primary mt-4"

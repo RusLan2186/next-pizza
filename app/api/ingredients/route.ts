@@ -2,7 +2,7 @@ import { prisma } from "@/prisma/prisma-client";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const ingridients = await prisma.ingridient.findMany();
+  const ingredients = await prisma.ingredient.findMany();
 
-  return NextResponse.json(ingridients);
+  return NextResponse.json(ingredients);
 }

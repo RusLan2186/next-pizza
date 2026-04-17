@@ -48,7 +48,7 @@ model Product {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
-  ingridients Ingridient[]
+  ingredients Ingredient[]
   variants    ProductVariant[]
 
   cart   Cart? @relation(fields: [cartId], references: [id])
@@ -76,10 +76,10 @@ model ProductVariant {
   updatedAt DateTime @updatedAt
 }
 
-model Ingridient {
+model Ingredient {
   id Int @id @default(autoincrement())
 
-  ingridientName String
+  ingredientName String
 
   price    Int
   imageUrl String
@@ -120,7 +120,7 @@ model CartItem {
   cartId Int
 
   quantity    Int
-  ingridients Ingridient[]
+  ingredients Ingredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

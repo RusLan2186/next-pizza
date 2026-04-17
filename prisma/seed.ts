@@ -50,7 +50,7 @@ async function up() {
     data: categories,
   });
 
-  await prisma.ingridient.createMany({
+  await prisma.ingredient.createMany({
     data: ingredients,
   });
 
@@ -63,7 +63,7 @@ async function up() {
       productName: "Pepperoni",
       imageUrl: "/pizza/pizza-1.png",
       categoryId: 1,
-      ingridients: {
+      ingredients: {
         connect: ingredients.slice(0, 5),
       },
     },
@@ -74,7 +74,7 @@ async function up() {
       productName: "Margherita",
       imageUrl: "/pizza/pizza-2.png",
       categoryId: 1,
-      ingridients: {
+      ingredients: {
         connect: ingredients.slice(5, 10),
       },
     },
@@ -85,7 +85,7 @@ async function up() {
       productName: "Hawaiian",
       imageUrl: "/pizza/pizza-3.png",
       categoryId: 2,
-      ingridients: {
+      ingredients: {
         connect: ingredients.slice(10, 40),
       },
     },
@@ -145,7 +145,7 @@ async function up() {
       cartId: 1,
       productVariantId: 1,
       quantity: 2,
-      ingridients: {
+      ingredients: {
         connect: [{ id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }],
       },
     },
@@ -159,18 +159,14 @@ async function down() {
   await prisma.$executeRaw`TRUNCATE TABLE "Category" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE TABLE "Product" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE TABLE "ProductVariant" RESTART IDENTITY CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Ingridient" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Ingredient" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE TABLE "Cart" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE TABLE "CartItem" RESTART IDENTITY CASCADE`;
 }
 
 async function main() {
-  try {
-    await down();
-    await up();
-  } catch (e) {
-    console.error(e);
-  }
+  await down();
+  await up();
 }
 
 main()
