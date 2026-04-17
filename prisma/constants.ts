@@ -18,8 +18,6 @@ export const categories = [
   {
     categoryName: "Drinks",
   },
-
-
 ];
 
 export const ingredients = [
@@ -61,53 +59,89 @@ export const ingredients = [
 ].map((obj, index) => ({ id: index + 1, ...obj }));
 
 export const products = [
+
   {
-    productName: "Caffè Latte",
-    imageUrl: "/other-products/latte.webp",
+    productName: "Ham & Cheese Sandwich",
+    imageUrl: "/other-products/breakfast/cheese-sandwich.webp",
     categoryId: 2,
   },
   {
-    productName: "Ham & Cheese Sandwich",
-    imageUrl: "/other-products/cheese-sandwich.webp",
-    categoryId: 3,
+    productName: "Classic Omelet",
+    imageUrl: "/other-products/breakfast/omlet.avif",
+    categoryId: 2,
+  },
+  {
+    productName: "Cheese Omelet",
+    imageUrl: "/other-products/breakfast/cheese-omlet.avif",
+    categoryId: 2,
   },
 
   {
     productName: "Oven-Baked Potatoes with Sauce 🌱",
-    imageUrl: "/other-products/potato.webp",
+    imageUrl: "/other-products/appetizers/potato.webp",
     categoryId: 3,
   },
   {
     productName: "Dodster",
-    imageUrl: "/other-products/dobster.webp",
+    imageUrl: "/other-products/appetizers/dobster.webp",
+    categoryId: 3,
+  },
+  {
+    productName: "Chicken Roll",
+    imageUrl: "/other-products/appetizers/chicken-roll.avif",
+    categoryId: 3,
+  },
+  {
+    productName: "Spicy Dodster",
+    imageUrl: "/other-products/appetizers/dodster-chill.avif",
+    categoryId: 3,
+  },
+  {
+    productName: "Cupcakes",
+    imageUrl: "/other-products/appetizers/cupcackes.avif",
+    categoryId: 3,
+  },
+  {
+    productName: "Rustic Potatoes",
+    imageUrl: "/other-products/appetizers/potato.avif",
     categoryId: 3,
   },
 
   {
     productName: "Banana Milkshake",
 
-    imageUrl: "/other-products/banana__coctail.webp",
+    imageUrl: "/other-products/cocktails/banana__coctail.webp",
     categoryId: 4,
   },
   {
     productName: "Caramel Apple Milkshake",
-    imageUrl: "/other-products/caramel__coctail.webp",
+    imageUrl: "/other-products/cocktails/caramel__coctail.webp",
+    categoryId: 4,
+  },
+  {
+    productName: "Berry Mojito",
+    imageUrl: "/other-products/cocktails/coctail-2.avif",
+    categoryId: 4,
+  },
+  {
+    productName: "Mango Fizz",
+    imageUrl: "/other-products/cocktails/coctail-3.avif",
     categoryId: 4,
   },
 
   {
     productName: "Caramel Cappuccino",
-    imageUrl: "/other-products/caramel__cappuchino.webp",
+    imageUrl: "/other-products/drinks/caramel__cappuchino.webp",
     categoryId: 5,
   },
   {
     productName: "Coconut Latte",
-    imageUrl: "/other-products/late.webp",
+    imageUrl: "/other-products/drinks/late.webp",
     categoryId: 5,
   },
   {
     productName: "Americano",
-    imageUrl: "/other-products/americano.webp",
+    imageUrl: "/other-products/drinks/americano.webp",
     categoryId: 5,
   },
 ];

@@ -11,17 +11,39 @@ const generateProductItem = ({
   productId,
   pizzaType,
   size,
+  price,
 }: {
   productId: number;
   pizzaType?: 1 | 2;
   size?: 20 | 30 | 40;
+  price?: number;
 }) => {
   return {
     productId,
-    price: randomNumber(5, 30),
+    price: price ?? randomNumber(5, 30),
     pizzaType,
     size,
   } as Prisma.ProductVariantUncheckedCreateInput;
+};
+
+const otherProductsPrices: Record<string, number> = {
+  "Caffè Latte": 7,
+  "Ham & Cheese Sandwich": 9,
+  "Classic Omelet": 8,
+  "Cheese Omelet": 10,
+  "Oven-Baked Potatoes with Sauce 🌱": 6,
+  Dodster: 8,
+  "Chicken Roll": 9,
+  "Spicy Dodster": 10,
+  Cupcakes: 7,
+  "Rustic Potatoes": 7,
+  "Banana Milkshake": 8,
+  "Caramel Apple Milkshake": 9,
+  "Berry Mojito": 8,
+  "Mango Fizz": 8,
+  "Caramel Cappuccino": 7,
+  "Coconut Latte": 7,
+  Americano: 6,
 };
 
 // генерирует данные
@@ -84,12 +106,64 @@ async function up() {
     data: {
       productName: "Hawaiian",
       imageUrl: "/pizza/pizza-3.png",
-      categoryId: 2,
+      categoryId: 1,
       ingredients: {
         connect: ingredients.slice(10, 40),
       },
     },
   });
+
+  const pizza4 = await prisma.product.create({
+    data: {
+      productName: "BBQ Chicken",
+      imageUrl: "/pizza/pizza-4.avif",
+      categoryId: 1,
+      ingredients: {
+        connect: ingredients.slice(2, 6),
+      },
+    },
+  });
+
+  const pizza5 = await prisma.product.create({
+    data: {
+      productName: "Four Cheese",
+      imageUrl: "/pizza/pizza-5.avif",
+      categoryId: 1,
+      ingredients: {
+        connect: ingredients.slice(0, 4),
+      },
+    },
+  });
+
+  const pizza6 = await prisma.product.create({
+    data: {
+      productName: "Meat Lovers",
+      imageUrl: "/pizza/pizza-6.avif",
+      categoryId: 1,
+      ingredients: {
+        connect: ingredients.slice(3, 7),
+      },
+    },
+  });
+
+  const nonPizzaProducts = await prisma.product.findMany({
+    where: {
+      categoryId: {
+        not: 1,
+      },
+    },
+    select: {
+      id: true,
+      productName: true,
+    },
+  });
+
+  const nonPizzaProductVariants = nonPizzaProducts.map((product) =>
+    generateProductItem({
+      productId: product.id,
+      price: otherProductsPrices[product.productName] ?? randomNumber(6, 12),
+    }),
+  );
 
   await prisma.productVariant.createMany({
     data: [
@@ -111,16 +185,23 @@ async function up() {
       generateProductItem({ productId: pizza3.id, pizzaType: 2, size: 30 }),
       generateProductItem({ productId: pizza3.id, pizzaType: 2, size: 40 }),
 
+      // Пицца "BBQ Chicken"
+      generateProductItem({ productId: pizza4.id, pizzaType: 1, size: 20 }),
+      generateProductItem({ productId: pizza4.id, pizzaType: 1, size: 30 }),
+      generateProductItem({ productId: pizza4.id, pizzaType: 2, size: 40 }),
+
+      // Пицца "Four Cheese"
+      generateProductItem({ productId: pizza5.id, pizzaType: 1, size: 20 }),
+      generateProductItem({ productId: pizza5.id, pizzaType: 2, size: 30 }),
+      generateProductItem({ productId: pizza5.id, pizzaType: 2, size: 40 }),
+
+      // Пицца "Meat Lovers"
+      generateProductItem({ productId: pizza6.id, pizzaType: 1, size: 20 }),
+      generateProductItem({ productId: pizza6.id, pizzaType: 1, size: 30 }),
+      generateProductItem({ productId: pizza6.id, pizzaType: 2, size: 40 }),
+
       // Другие продукты
-      generateProductItem({ productId: 1 }),
-      generateProductItem({ productId: 2 }),
-      generateProductItem({ productId: 3 }),
-      generateProductItem({ productId: 4 }),
-      generateProductItem({ productId: 5 }),
-      generateProductItem({ productId: 6 }),
-      generateProductItem({ productId: 7 }),
-      generateProductItem({ productId: 8 }),
-      generateProductItem({ productId: 9 }),
+      ...nonPizzaProductVariants,
     ],
   });
 
