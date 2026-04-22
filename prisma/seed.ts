@@ -26,6 +26,18 @@ const generateProductItem = ({
   } as Prisma.ProductVariantUncheckedCreateInput;
 };
 
+const getIngredientsSlice = (start: number, end: number, pizzaName: string) => {
+  const connect = ingredients
+    .slice(start, end)
+    .map((ingredient) => ({ id: ingredient.id }));
+
+  if (connect.length === 0) {
+    throw new Error(`Pizza ${pizzaName} must have at least one ingredient`);
+  }
+
+  return connect;
+};
+
 const otherProductsPrices: Record<string, number> = {
   "Caffè Latte": 7,
   "Ham & Cheese Sandwich": 9,
@@ -44,6 +56,58 @@ const otherProductsPrices: Record<string, number> = {
   "Caramel Cappuccino": 7,
   "Coconut Latte": 7,
   Americano: 6,
+};
+
+const pizzaBasePrices: Record<string, number> = {
+  Pepperoni: 10,
+  Margherita: 9,
+  Hawaiian: 11,
+  "BBQ Chicken": 12,
+  "Four Cheese": 12,
+  "Meat Lovers": 13,
+};
+
+const pizzaSizePriceDelta: Record<20 | 30 | 40, number> = {
+  20: 0,
+  30: 4,
+  40: 8,
+};
+
+const pizzaTypePriceDelta: Record<1 | 2, number> = {
+  1: 0,
+  2: 1,
+};
+
+const pizzaVariantsByName: Partial<
+  Record<string, Record<1 | 2, Array<20 | 30 | 40>>>
+> = {
+  // Example of custom dough/size matrix for a specific pizza
+  Pepperoni: {
+    1: [30, 40],
+    2: [20, 30],
+  },
+  Margherita: {
+    1: [20, 30, 40],
+    2: [20, 30],
+  },
+};
+
+const getPizzaVariantPrice = ({
+  pizzaName,
+  pizzaType,
+  size,
+}: {
+  pizzaName: string;
+  pizzaType: 1 | 2;
+  size: 20 | 30 | 40;
+}) => {
+  const basePrice = pizzaBasePrices[pizzaName];
+
+  if (!basePrice) {
+    throw new Error(`Missing base price for pizza ${pizzaName}`);
+  }
+
+  return basePrice + pizzaSizePriceDelta[size] + pizzaTypePriceDelta[pizzaType];
 };
 
 // генерирует данные
@@ -86,7 +150,7 @@ async function up() {
       imageUrl: "/pizza/pizza-1.png",
       categoryId: 1,
       ingredients: {
-        connect: ingredients.slice(0, 5),
+        connect: getIngredientsSlice(0, 5, "Pepperoni"),
       },
     },
   });
@@ -97,7 +161,7 @@ async function up() {
       imageUrl: "/pizza/pizza-2.png",
       categoryId: 1,
       ingredients: {
-        connect: ingredients.slice(5, 10),
+        connect: getIngredientsSlice(4, 7, "Margherita"),
       },
     },
   });
@@ -108,7 +172,7 @@ async function up() {
       imageUrl: "/pizza/pizza-3.png",
       categoryId: 1,
       ingredients: {
-        connect: ingredients.slice(10, 40),
+        connect: getIngredientsSlice(1, 5, "Hawaiian"),
       },
     },
   });
@@ -119,7 +183,7 @@ async function up() {
       imageUrl: "/pizza/pizza-4.avif",
       categoryId: 1,
       ingredients: {
-        connect: ingredients.slice(2, 6),
+        connect: getIngredientsSlice(2, 6, "BBQ Chicken"),
       },
     },
   });
@@ -130,7 +194,7 @@ async function up() {
       imageUrl: "/pizza/pizza-5.avif",
       categoryId: 1,
       ingredients: {
-        connect: ingredients.slice(0, 4),
+        connect: getIngredientsSlice(0, 4, "Four Cheese"),
       },
     },
   });
@@ -141,7 +205,7 @@ async function up() {
       imageUrl: "/pizza/pizza-6.avif",
       categoryId: 1,
       ingredients: {
-        connect: ingredients.slice(3, 7),
+        connect: getIngredientsSlice(3, 7, "Meat Lovers"),
       },
     },
   });
@@ -165,40 +229,56 @@ async function up() {
     }),
   );
 
+  const generateAllPizzaVariants = ({
+    productId,
+    pizzaName,
+  }: {
+    productId: number;
+    pizzaName: string;
+  }) => {
+    const variantsConfig = pizzaVariantsByName[pizzaName];
+
+    return ([1, 2] as const).flatMap((pizzaType) => {
+      const availableSizes =
+        variantsConfig?.[pizzaType] ?? ([20, 30, 40] as const);
+
+      return availableSizes.map((size) =>
+        generateProductItem({
+          productId,
+          pizzaType,
+          size,
+          price: getPizzaVariantPrice({ pizzaName, pizzaType, size }),
+        }),
+      );
+    });
+  };
+
   await prisma.productVariant.createMany({
     data: [
-      // Пицца "Pepperoni"
-      generateProductItem({ productId: pizza1.id, pizzaType: 1, size: 20 }),
-      generateProductItem({ productId: pizza1.id, pizzaType: 2, size: 30 }),
-      generateProductItem({ productId: pizza1.id, pizzaType: 2, size: 40 }),
-
-      // Пицца "Margherita"
-      generateProductItem({ productId: pizza2.id, pizzaType: 1, size: 20 }),
-      generateProductItem({ productId: pizza2.id, pizzaType: 1, size: 30 }),
-      generateProductItem({ productId: pizza2.id, pizzaType: 1, size: 40 }),
-      generateProductItem({ productId: pizza2.id, pizzaType: 2, size: 20 }),
-      generateProductItem({ productId: pizza2.id, pizzaType: 2, size: 30 }),
-      generateProductItem({ productId: pizza2.id, pizzaType: 2, size: 40 }),
-
-      // Пицца "Hawaiian"
-      generateProductItem({ productId: pizza3.id, pizzaType: 1, size: 20 }),
-      generateProductItem({ productId: pizza3.id, pizzaType: 2, size: 30 }),
-      generateProductItem({ productId: pizza3.id, pizzaType: 2, size: 40 }),
-
-      // Пицца "BBQ Chicken"
-      generateProductItem({ productId: pizza4.id, pizzaType: 1, size: 20 }),
-      generateProductItem({ productId: pizza4.id, pizzaType: 1, size: 30 }),
-      generateProductItem({ productId: pizza4.id, pizzaType: 2, size: 40 }),
-
-      // Пицца "Four Cheese"
-      generateProductItem({ productId: pizza5.id, pizzaType: 1, size: 20 }),
-      generateProductItem({ productId: pizza5.id, pizzaType: 2, size: 30 }),
-      generateProductItem({ productId: pizza5.id, pizzaType: 2, size: 40 }),
-
-      // Пицца "Meat Lovers"
-      generateProductItem({ productId: pizza6.id, pizzaType: 1, size: 20 }),
-      generateProductItem({ productId: pizza6.id, pizzaType: 1, size: 30 }),
-      generateProductItem({ productId: pizza6.id, pizzaType: 2, size: 40 }),
+      ...generateAllPizzaVariants({
+        productId: pizza1.id,
+        pizzaName: pizza1.productName,
+      }),
+      ...generateAllPizzaVariants({
+        productId: pizza2.id,
+        pizzaName: pizza2.productName,
+      }),
+      ...generateAllPizzaVariants({
+        productId: pizza3.id,
+        pizzaName: pizza3.productName,
+      }),
+      ...generateAllPizzaVariants({
+        productId: pizza4.id,
+        pizzaName: pizza4.productName,
+      }),
+      ...generateAllPizzaVariants({
+        productId: pizza5.id,
+        pizzaName: pizza5.productName,
+      }),
+      ...generateAllPizzaVariants({
+        productId: pizza6.id,
+        pizzaName: pizza6.productName,
+      }),
 
       // Другие продукты
       ...nonPizzaProductVariants,

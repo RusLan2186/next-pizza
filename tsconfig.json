@@ -13,13 +13,14 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-     "noImplicitAny": false,
+    "noImplicitAny": false,
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
+      "@/components/*": ["./shared/components/*"],
       "@/*": ["./*"]
     }
   },

@@ -1,10 +1,8 @@
-
-
 import { prisma } from "@/prisma/prisma-client";
 import {
   Container,
   GroupVariants,
-  ProductImage,
+  PizzaImage,
   Title,
 } from "@/components/shared";
 import { notFound } from "next/navigation";
@@ -29,7 +27,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <>
       <Container className="flex flex-col my-10">
         <div className="flex flex-1">
-          <ProductImage
+          <PizzaImage
             src={product.imageUrl}
             name={product.productName}
             size={40}
@@ -49,7 +47,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </p>
 
             <GroupVariants
-            selectedValue="2"
+              value="2"
               items={[
                 {
                   name: "Small",
@@ -64,7 +62,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {
                   name: "Big",
                   value: "3",
-                  disabled:true
+                  disabled: true,
                 },
               ]}
             />

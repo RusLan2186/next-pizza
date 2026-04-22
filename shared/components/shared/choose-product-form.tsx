@@ -1,0 +1,44 @@
+import { cn } from "@/shared/lib/utils";
+import { Button } from "../ui";
+import { DialogTitle } from "../ui/dialog";
+
+interface Props {
+  imageUrl: string;
+  name: string;
+  onClickAdd: () => void;
+  className?: string;
+}
+
+export const ChooseProductForm: React.FC<Props> = ({
+  imageUrl,
+  name,
+
+  onClickAdd,
+  className,
+}) => {
+  const textDetails = "30cm, 8 slices, 500g";
+  const totalPrice = 20;
+  return (
+    <div className={cn(className, "flex flex-1 relative")}>
+      <div className="flex items-center justify-center flex-1 relative w-full">
+        <img
+          src={imageUrl}
+          alt={name}
+          className="relative left-2 top-2 transition-all z-[18] duration-300 object-cover w-[350px] h-[350px]"
+        />
+      </div>
+
+      <div className="w-[490px] bg-[#f7f6f5] p-7">
+        <DialogTitle className=" text-[28px] font-extrabold mb-2 leading-[32px]">
+          {name}
+        </DialogTitle>
+
+        <p className="text-grey-400 mb-10"> {textDetails}</p>
+
+        <Button className="h-[55px] px-10 text-base rounded-[18px] w-full">
+          Add to cart {totalPrice}$
+        </Button>
+      </div>
+    </div>
+  );
+};
