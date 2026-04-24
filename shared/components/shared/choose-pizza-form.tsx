@@ -22,7 +22,7 @@ interface Props {
   name: string;
   items: ProductVariant[];
   ingredients?: Ingredient[];
-  onClickAddCart?: () => void;
+  onClickAddCart?: (productItemId: number, ingredients: number[]) => void;
   className?: string;
 }
 
@@ -61,7 +61,7 @@ export const ChoosePizzaForm: React.FC<Props> = ({
     () => getAvailablePizzaSizes(type, items),
     [type, items],
   );
- 
+
   const onSelectType = (t: string) => {
     const newType = Number(t) as PizzaType;
     setType(newType);
@@ -88,7 +88,12 @@ export const ChoosePizzaForm: React.FC<Props> = ({
   const textDetails = `${size}cm, ${mapPizzaType[type]} pizza`;
 
   const handleClickAddCart = () => {
-    onClickAddCart?.();
+    const currentVariant = items.find(
+      (item) => item.size === size && item.pizzaType === type,
+    );
+    if (currentVariant) {
+      onClickAddCart?.(currentVariant.id, Array.from(selectedIngredients));
+    }
   };
 
   return (
