@@ -4,7 +4,7 @@ import {
   GroupVariants,
   PizzaImage,
   Title,
-} from "@/components/shared";
+} from "@/shared/components/shared";
 import { notFound } from "next/navigation";
 
 interface ProductPageProps {

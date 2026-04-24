@@ -18,32 +18,23 @@ export const ChooseProductModal: React.FC<Props> = ({ className, product }) => {
   const router = useRouter();
   const firstItem = product.variants[0];
   const izPizzaForm = Boolean(firstItem.pizzaType);
-  const addCartItem = useCartStore((store) => store.addCartItem);
+  const { addCartItem, loading } = useCartStore((store) => store);
 
-  const onAddProduct = async () => {
+  const handleAddToCart = async (
+    productItemId: number,
+    ingredients?: number[],
+  ) => {
     try {
+      const ItemId = productItemId ?? firstItem.id;
       await addCartItem({
-        productItemId: firstItem.id,
-      });
-      router.back();
-      toast.success("Product added to cart");
-    } catch (error) {
-      toast.error("Error adding product to cart");
-      console.error("Error adding product to cart", error);
-    }
-  };
-
-  const onAddPizza = async (productItemId: number, ingredients: number[]) => {
-    try {
-      await addCartItem({
-        productItemId,
+        productItemId: ItemId,
         ingredients,
       });
       router.back();
-      toast.success("Pizza added to cart");
+      toast.success(product.productName + " " + "added to cart");
     } catch (error) {
-      toast.error("Error adding pizza to cart");
-      console.error("Error adding pizza to cart", error);
+      toast.error("Error adding to cart");
+      console.error("Error adding product to cart", error);
     }
   };
 
@@ -60,15 +51,17 @@ export const ChooseProductModal: React.FC<Props> = ({ className, product }) => {
             imageUrl={product.imageUrl}
             name={product.productName}
             ingredients={product.ingredients}
-            onClickAddCart={onAddPizza}
+            onClickAddCart={handleAddToCart}
             items={product.variants}
+            loading={loading}
           />
         ) : (
           <ChooseProductForm
             imageUrl={product.imageUrl}
             name={product.productName}
             price={firstItem.price}
-            onClickAdd={onAddProduct}
+            onClickAdd={() => handleAddToCart(firstItem.id)}
+            loading={loading}
           />
         )}
       </DialogContent>

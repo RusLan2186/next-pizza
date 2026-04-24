@@ -1,11 +1,5 @@
 import { prisma } from "@/prisma/prisma-client";
-import {
-  ChooseProductModal,
-  Container,
-  GroupVariants,
-  ProductImage,
-  Title,
-} from "@/components/shared";
+import { ChooseProductModal } from "@/shared/components/shared";
 import { notFound } from "next/navigation";
 
 interface ProductPageProps {

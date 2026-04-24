@@ -7,6 +7,7 @@ interface Props {
   name: string;
   price: number;
   onClickAdd: () => void;
+  loading?: boolean;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export const ChooseProductForm: React.FC<Props> = ({
   name,
   price,
   onClickAdd,
+  loading,
   className,
 }) => {
   return (
@@ -33,6 +35,7 @@ export const ChooseProductForm: React.FC<Props> = ({
         </DialogTitle>
 
         <Button
+          loading={loading}
           onClick={onClickAdd}
           className="h-[47px] px-10 text-base rounded-[18px] w-full mt-auto"
         >

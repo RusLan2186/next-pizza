@@ -13,8 +13,9 @@ import Link from "next/link";
 import { CartDrawerItem } from "./cart-drawer-item";
 import { getCartItemDetails } from "@/shared/lib";
 import { useCartStore } from "@/shared/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PizzaSize, PizzaType } from "@/shared/constants/pizza";
+import toast from "react-hot-toast";
 
 interface Props {
   className?: string;
@@ -24,6 +25,7 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
   children,
   className,
 }) => {
+  const [removingItemId, setRemovingItemId] = useState<number | null>(null);
   const totalAmount = useCartStore((state) => state.totalAmount);
   const fetchCartItems = useCartStore((state) => state.fetchCartItems);
   const items = useCartStore((state) => state.items);
@@ -44,6 +46,19 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
   ) => {
     const newQuantity = type === "increment" ? quantity + 1 : quantity - 1;
     updateCartItemQuantity(id, newQuantity);
+  };
+
+  const onClickRemoveItem = async (id: number) => {
+    setRemovingItemId(id);
+
+    try {
+      await removeCartItem(id);
+      toast.success("Product removed from cart");
+    } catch {
+      toast.error("Failed to remove product from cart");
+    } finally {
+      setRemovingItemId((currentId) => (currentId === id ? null : currentId));
+    }
   };
 
   return (
@@ -74,7 +89,8 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
                 onClickCountButton={(type) =>
                   onClickCountButton(item.id, type, item.quantity)
                 }
-                onClickRemove={() => removeCartItem(item.id)}
+                loading={removingItemId === item.id}
+                onClickRemove={() => onClickRemoveItem(item.id)}
                 details={
                   item.pizzaSize && item.pizzaType
                     ? getCartItemDetails(
