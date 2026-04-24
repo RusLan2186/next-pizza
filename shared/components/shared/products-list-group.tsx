@@ -6,11 +6,12 @@ import { cn } from "@/shared/lib/utils";
 import { useIntersection } from "react-use";
 import { ProductCard } from "./product-card";
 import { useCategoryStore } from "@/shared/store/category";
-import { Product } from "@prisma/client";
+import { ProductWithRelations } from "@/@types/prisma";
+
 
 interface Props {
   title: string;
-  products: any;
+  products: ProductWithRelations[];
   categoryId: number;
   className?: string;
   listClassName?: string;
@@ -48,8 +49,9 @@ export const ProductsListGroup: React.FC<Props> = ({
             key={product.id}
             id={product.id}
             name={product.productName}
-            price={product.variants?.[0]?.price ?? 0}
+            price={Math.min(...(product.variants?.map((v) => v.price) ?? [0]))}
             imageUrl={product.imageUrl}
+            ingredients={product.ingredients}
           />
         ))}
       </div>
