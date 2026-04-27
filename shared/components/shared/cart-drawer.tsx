@@ -92,14 +92,12 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
             !totalAmount && "justify-center",
           )}
         >
-          {totalAmount > 0 && (
-            <SheetHeader>
-              <SheetTitle>
-                Your cart contains{" "}
-                <span className="font-bold"> {items.length} items</span>
-              </SheetTitle>
-            </SheetHeader>
-          )}
+          <SheetHeader className={cn(!totalAmount && "sr-only")}>
+            <SheetTitle>
+              Your cart contains{" "}
+              <span className="font-bold"> {items.length} items</span>
+            </SheetTitle>
+          </SheetHeader>
 
           {!totalAmount && (
             <div className="flex flex-col items-center justify-center  w-72 mx-auto">
@@ -118,7 +116,7 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
                 Please add anything to your cart yet.
               </p>
 
-              <SheetClose>
+              <SheetClose asChild>
                 <Button className="w-56 h-12 text-base" size="lg">
                   <ArrowLeft className="w-5 mr-2" />
                   Go back
