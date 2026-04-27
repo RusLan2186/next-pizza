@@ -1,6 +1,5 @@
 import { cn } from "@/shared/lib/utils";
 import { Button } from "../ui";
-import { DialogTitle } from "../ui/dialog";
 
 interface Props {
   imageUrl: string;
@@ -30,9 +29,9 @@ export const ChooseProductForm: React.FC<Props> = ({
       </div>
 
       <div className="flex  flex-col w-[490px] bg-[#f7f6f5] p-7">
-        <DialogTitle className=" text-[28px] font-extrabold mb-2 leading-[32px]">
+        <h2 className="text-[28px] font-extrabold mb-2 leading-[32px]">
           {name}
-        </DialogTitle>
+        </h2>
 
         <Button
           loading={loading}

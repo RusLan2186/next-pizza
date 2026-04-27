@@ -3,7 +3,6 @@
 import { cn } from "@/shared/lib/utils";
 import { PizzaImage } from "./pizza-image";
 import { Button } from "../ui";
-import { DialogTitle } from "../ui/dialog";
 import { GroupVariants } from "./group-variants";
 import { mapPizzaType, PizzaSize, PizzaType } from "@/shared/constants/pizza";
 import { useMemo, useState } from "react";
@@ -103,9 +102,9 @@ export const ChoosePizzaForm: React.FC<Props> = ({
       <PizzaImage src={imageUrl} name={name} size={size} />
 
       <div className="w-[490px] bg-[#f7f6f5] p-7">
-        <DialogTitle className=" text-[28px] font-extrabold mb-2 leading-[32px]">
+        <h2 className="text-[28px] font-extrabold mb-2 leading-[32px]">
           {name}
-        </DialogTitle>
+        </h2>
 
         <p className="text-grey-400 mb-5"> {textDetails}</p>
 

@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     const data = (await req.json()) as CreateCartItemValues;
 
-    const findCartItem = await prisma.cartItem.findFirst({
+    const existingCartItems = await prisma.cartItem.findMany({
       where: {
         cartId: userCart.id,
         productVariantId: data.productItemId,
@@ -71,20 +71,19 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Check if the same product with the exact same ingredients already exists
     const requestIngredientIds = (data.ingredients || []).sort((a, b) => a - b);
-    const cartItemIngredientIds =
-      findCartItem?.ingredients.map((i) => i.id).sort((a, b) => a - b) || [];
 
-    const isSameProduct =
-      findCartItem &&
-      cartItemIngredientIds.length === requestIngredientIds.length &&
-      cartItemIngredientIds.every(
-        (id, idx) => id === requestIngredientIds[idx],
+    const findCartItem = existingCartItems.find((item) => {
+      const itemIngredientIds = item.ingredients
+        .map((i) => i.id)
+        .sort((a, b) => a - b);
+      return (
+        itemIngredientIds.length === requestIngredientIds.length &&
+        itemIngredientIds.every((id, idx) => id === requestIngredientIds[idx])
       );
+    });
 
-    // If the same product with the same ingredients already exists in the cart, just update the quantity
-    if (isSameProduct && findCartItem) {
+    if (findCartItem) {
       await prisma.cartItem.update({
         where: {
           id: findCartItem.id,
