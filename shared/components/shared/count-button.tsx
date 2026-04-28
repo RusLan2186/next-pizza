@@ -22,6 +22,7 @@ export const CountButton: React.FC<CountButtonProps> = ({
     <div
       className={cn(
         "inline-flex items-center justify-between gap-3",
+        size === "sm" ? "w-[92px]" : "w-[118px]",
         className,
       )}
     >
@@ -32,11 +33,13 @@ export const CountButton: React.FC<CountButtonProps> = ({
         type="minus"
       />
 
-      {loading ? (
-        <Loader2 className="text-gray-400 animate-spin" size={16} />
-      ) : (
-        <b className={size === "sm" ? "text-sm" : "text-md"}>{value}</b>
-      )}
+      <span className="inline-flex w-4 items-center justify-center">
+        {loading ? (
+          <Loader2 className="text-gray-400 animate-spin" size={16} />
+        ) : (
+          <b className={size === "sm" ? "text-sm" : "text-md"}>{value}</b>
+        )}
+      </span>
 
       <CountIconButton
         onClick={() => onClick?.("increment")}

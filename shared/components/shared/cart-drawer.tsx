@@ -10,16 +10,16 @@ import {
 } from "@/components/ui/sheet";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "../ui";
-import Link from "next/link";
 import { CartDrawerItem } from "./cart-drawer-item";
 import { getCartItemDetails } from "@/shared/lib";
-import { useCartStore } from "@/shared/store";
-import { useEffect, useState } from "react";
+import { useTransition } from "react";
 import { PizzaSize, PizzaType } from "@/shared/constants/pizza";
-import toast from "react-hot-toast";
 import { Title } from "./title";
 import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
+import { useCart } from "@/shared/hooks/use-cart";
+import { useRouter } from "next/navigation";
+import { useCartItemActions } from "@/shared/hooks/use-cart-item-actions";
 
 interface Props {
   className?: string;
@@ -29,53 +29,24 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
   children,
   className,
 }) => {
-  const [removingItemId, setRemovingItemId] = useState<number | null>(null);
-  const [updatingItemId, setUpdatingItemId] = useState<number | null>(null);
-  const totalAmount = useCartStore((state) => state.totalAmount);
-  const fetchCartItems = useCartStore((state) => state.fetchCartItems);
-  const items = useCartStore((state) => state.items);
-  const updateCartItemQuantity = useCartStore(
-    (state) => state.updateItemQuantity,
-  );
+  const router = useRouter();
+  const [isCheckoutPending, startCheckoutTransition] = useTransition();
 
-  const removeCartItem = useCartStore((state) => state.removeCartItem);
+  const { totalAmount, items, updateItemQuantity, removeCartItem } = useCart();
+  const {
+    removingItemId,
+    updatingItemId,
+    onClickCountButton,
+    onClickRemoveItem,
+  } = useCartItemActions({
+    updateItemQuantity,
+    removeCartItem,
+  });
 
-  useEffect(() => {
-    fetchCartItems();
-  }, [fetchCartItems]);
-
-  const onClickCountButton = async (
-    id: number,
-    type: "increment" | "decrement",
-    quantity: number,
-  ) => {
-    if (updatingItemId === id) {
-      return;
-    }
-
-    const newQuantity = type === "increment" ? quantity + 1 : quantity - 1;
-    setUpdatingItemId(id);
-
-    try {
-      await updateCartItemQuantity(id, newQuantity);
-    } catch {
-      toast.error("Failed to update quantity");
-    } finally {
-      setUpdatingItemId((currentId) => (currentId === id ? null : currentId));
-    }
-  };
-
-  const onClickRemoveItem = async (id: number) => {
-    setRemovingItemId(id);
-
-    try {
-      await removeCartItem(id);
-      toast.success("Product removed from cart");
-    } catch {
-      toast.error("Failed to remove product from cart");
-    } finally {
-      setRemovingItemId((currentId) => (currentId === id ? null : currentId));
-    }
+  const onClickCheckout = () => {
+    startCheckoutTransition(() => {
+      router.push("/checkout");
+    });
   };
 
   return (
@@ -140,18 +111,14 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
                       onClickCountButton={(type) =>
                         onClickCountButton(item.id, type, item.quantity)
                       }
+                      onClickRemove={() => onClickRemoveItem(item.id)}
                       loading={removingItemId === item.id}
                       countLoading={updatingItemId === item.id}
-                      onClickRemove={() => onClickRemoveItem(item.id)}
-                      details={
-                        item.pizzaSize && item.pizzaType
-                          ? getCartItemDetails(
-                              item.pizzaType as PizzaType,
-                              item.pizzaSize as PizzaSize,
-                              item.ingredients,
-                            )
-                          : ""
-                      }
+                      details={getCartItemDetails(
+                        item.ingredients,
+                        item.pizzaType as PizzaType,
+                        item.pizzaSize as PizzaSize,
+                      )}
                     />
                   ))}
                 </div>
@@ -167,12 +134,15 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
 
                     <span className="font-bold text-lg">{totalAmount} $</span>
                   </div>
-                  <Link href="/cart">
-                    <Button type="submit" className="w-full h-12 text-base">
-                      Checkout
-                      <ArrowRight className="w-5 ml-2" />
-                    </Button>
-                  </Link>
+                  <Button
+                    type="button"
+                    className="w-full h-12 text-base"
+                    loading={isCheckoutPending}
+                    onClick={onClickCheckout}
+                  >
+                    Checkout
+                    <ArrowRight className="w-5 ml-2" />
+                  </Button>
                 </div>
               </SheetFooter>
             </>

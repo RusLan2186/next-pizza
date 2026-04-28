@@ -9,11 +9,13 @@ import { CartButton } from "./cart-button";
 
 interface Props {
   className?: string;
+  hasSearch?: boolean;
+  hasCart?: boolean;
 }
 
-export const Header: React.FC<Props> = ({ className }) => {
+export const Header: React.FC<Props> = ({ className, hasSearch = true, hasCart=true }) => {
   return (
-    <header className={cn(" border border-b ", className)}>
+    <header className={cn( "border-b", className)}>
       <Container className="flex items-center justify-between gap-3 py-4">
         <Link href="/" className="flex items-center gap-4">
           <Image src="/logo.png" alt="logo" width={35} height={35}></Image>
@@ -25,9 +27,11 @@ export const Header: React.FC<Props> = ({ className }) => {
           </div>
         </Link>
 
-        <div className="mx-10 flex-1">
-          <SearchInput />
-        </div>
+        {hasSearch && (
+          <div className="mx-10 flex-1">
+            <SearchInput />
+          </div>
+        )}
 
         <div className="flex items-center gap-3">
           <Button
@@ -38,7 +42,7 @@ export const Header: React.FC<Props> = ({ className }) => {
             Enter
           </Button>
 
-          <CartButton />
+          {hasCart && <CartButton />}
         </div>
       </Container>
     </header>
