@@ -1,11 +1,17 @@
-import { prisma } from "@/prisma/prisma-client";
-import { parsePaymentCallbackData, verifyPaymentCallback } from "@/shared/lib";
-import { OrderStatus } from "@prisma/client";
+import {
+  parsePaymentCallbackData,
+  syncOrderPaymentStatus,
+  verifyPaymentCallback,
+} from "@/shared/lib";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const contentType = request.headers.get("content-type") || "";
+    console.log(
+      "[LiqPay callback] incoming request, content-type:",
+      contentType,
+    );
 
     let data = "";
     let signature = "";
@@ -20,7 +26,15 @@ export async function POST(request: NextRequest) {
       signature = String(formData.get("signature") || "");
     }
 
+    console.log(
+      "[LiqPay callback] data length:",
+      data.length,
+      "signature length:",
+      signature.length,
+    );
+
     if (!data || !signature) {
+      console.log("[LiqPay callback] missing payload");
       return NextResponse.json(
         { ok: false, message: "Missing callback payload" },
         { status: 400 },
@@ -28,6 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     const isValid = verifyPaymentCallback({ data, signature });
+    console.log("[LiqPay callback] signature valid:", isValid);
     if (!isValid) {
       return NextResponse.json(
         { ok: false, message: "Invalid signature" },
@@ -36,6 +51,8 @@ export async function POST(request: NextRequest) {
     }
 
     const callback = parsePaymentCallbackData(data);
+    console.log("[LiqPay callback] parsed callback:", callback);
+
     if (!callback.paymentId) {
       return NextResponse.json(
         { ok: false, message: "Missing paymentId" },
@@ -43,19 +60,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (callback.status === "success") {
-      await prisma.order.updateMany({
-        where: { paymentId: callback.paymentId },
-        data: { status: OrderStatus.SUCCEEDED },
-      });
-    }
+    const syncResult = await syncOrderPaymentStatus({
+      paymentId: callback.paymentId,
+      status: callback.status,
+    });
 
-    if (callback.status === "canceled") {
-      await prisma.order.updateMany({
-        where: { paymentId: callback.paymentId },
-        data: { status: OrderStatus.CANCELED },
-      });
-    }
+    console.log("[LiqPay callback] sync result:", syncResult);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

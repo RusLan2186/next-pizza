@@ -23,7 +23,7 @@ export const PayOrderTemplate = ({
         Productprice: {subtotalAmount} $<br />
         Taxes (7%): {taxAmount} $<br />
         Delivery: {deliveryAmount} $<br />
-        <b>{totalAmount}</b> Total: $<br />
+        <b>Total: {totalAmount}</b> $<br />
         Please follow <a href={paymentUrl}>this link </a> to pay for your order.
       </p>
     </div>

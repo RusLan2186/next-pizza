@@ -1,5 +1,6 @@
 export {
   createPayment,
+  getPaymentStatus,
   parsePaymentCallbackData,
   verifyPaymentCallback,
 } from "./service";

@@ -29,4 +29,5 @@ export interface PaymentProvider {
   createPayment(input: CreatePaymentInput): CreatePaymentResult | null;
   verifyCallback(input: VerifyPaymentCallbackInput): boolean;
   parseCallbackData(base64Data: string): PaymentCallbackResult;
+  getPaymentStatus(paymentId: string): Promise<PaymentCallbackResult | null>;
 }

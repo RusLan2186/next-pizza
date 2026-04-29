@@ -72,16 +72,19 @@ export async function createOrder(data: CheckoutFormValues) {
     });
 
     const appUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
+    const resultUrl =
+      process.env.NODE_ENV === "development" ? "http://localhost:3000" : appUrl;
     const payment = createPayment({
       orderId: order.id,
       amount: totalAmount,
       description: `Payment for order #${order.id}`,
-      resultUrl: `${appUrl}/?orderId=${order.id}`,
+      resultUrl: `${resultUrl}/?orderId=${order.id}`,
       callbackUrl: `${appUrl}/api/payments/liqpay/callback`,
       currency: "UAH",
     });
 
-    const paymentUrl = payment?.paymentUrl || `${appUrl}/?orderId=${order.id}`;
+    const paymentUrl =
+      payment?.paymentUrl || `${resultUrl}/?orderId=${order.id}`;
 
     if (payment?.paymentId) {
       await prisma.order.update({

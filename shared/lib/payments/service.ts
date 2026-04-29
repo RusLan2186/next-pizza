@@ -2,6 +2,7 @@ import { LiqPayProvider } from "./providers/liqpay";
 import {
   CreatePaymentInput,
   CreatePaymentResult,
+  PaymentCallbackResult,
   PaymentProvider,
   VerifyPaymentCallbackInput,
 } from "./types";
@@ -30,4 +31,10 @@ export const verifyPaymentCallback = (
 
 export const parsePaymentCallbackData = (base64Data: string) => {
   return getProvider().parseCallbackData(base64Data);
+};
+
+export const getPaymentStatus = async (
+  paymentId: string,
+): Promise<PaymentCallbackResult | null> => {
+  return getProvider().getPaymentStatus(paymentId);
 };

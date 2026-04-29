@@ -8,6 +8,7 @@ import {
 } from "../types";
 
 const LIQPAY_CHECKOUT_URL = "https://www.liqpay.ua/api/3/checkout";
+const LIQPAY_API_URL = "https://www.liqpay.ua/api/request";
 
 const SUCCESS_STATUSES = new Set(["success", "sandbox", "wait_accept"]);
 const CANCELED_STATUSES = new Set([
@@ -30,6 +31,20 @@ const createSignature = (privateKey: string, data: string) =>
 
 export class LiqPayProvider implements PaymentProvider {
   providerName = "liqpay";
+
+  private mapStatus(rawStatus?: string): PaymentCallbackResult {
+    const normalizedStatus = rawStatus || "unknown";
+    let status: PaymentCallbackResult["status"] = "pending";
+
+    if (SUCCESS_STATUSES.has(normalizedStatus)) status = "success";
+    if (CANCELED_STATUSES.has(normalizedStatus)) status = "canceled";
+
+    return {
+      paymentId: "",
+      status,
+      rawStatus: normalizedStatus,
+    };
+  }
 
   createPayment(input: CreatePaymentInput): CreatePaymentResult | null {
     const publicKey = process.env.LIQPAY_PUBLIC_KEY?.trim();
@@ -73,22 +88,65 @@ export class LiqPayProvider implements PaymentProvider {
     return expected === input.signature;
   }
 
+  async getPaymentStatus(
+    paymentId: string,
+  ): Promise<PaymentCallbackResult | null> {
+    const publicKey = process.env.LIQPAY_PUBLIC_KEY?.trim();
+    const privateKey = process.env.LIQPAY_PRIVATE_KEY?.trim();
+
+    if (!publicKey || !privateKey || !paymentId) {
+      return null;
+    }
+
+    const payload = {
+      action: "status",
+      version: 3,
+      public_key: publicKey,
+      order_id: paymentId,
+    };
+
+    const data = encodeBase64(JSON.stringify(payload));
+    const signature = createSignature(privateKey, data);
+
+    const response = await fetch(LIQPAY_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ data, signature }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payloadResponse = (await response.json()) as {
+      order_id?: string;
+      status?: string;
+    };
+
+    const parsedStatus = this.mapStatus(payloadResponse.status);
+
+    return {
+      paymentId: payloadResponse.order_id || paymentId,
+      status: parsedStatus.status,
+      rawStatus: parsedStatus.rawStatus,
+    };
+  }
+
   parseCallbackData(base64Data: string): PaymentCallbackResult {
     const payload = JSON.parse(decodeBase64(base64Data)) as {
       order_id?: string;
       status?: string;
     };
 
-    const rawStatus = payload.status || "unknown";
-    let status: PaymentCallbackResult["status"] = "pending";
-
-    if (SUCCESS_STATUSES.has(rawStatus)) status = "success";
-    if (CANCELED_STATUSES.has(rawStatus)) status = "canceled";
+    const parsedStatus = this.mapStatus(payload.status);
 
     return {
       paymentId: payload.order_id || "",
-      status,
-      rawStatus,
+      status: parsedStatus.status,
+      rawStatus: parsedStatus.rawStatus,
     };
   }
 }

@@ -8,6 +8,7 @@ export interface GetSearchParams {
   priceFrom: string;
   priceTo: string;
   sizes: string;
+  orderId?: string;
 }
 
 const DEFAULT_MIN_PRICE = 0;
