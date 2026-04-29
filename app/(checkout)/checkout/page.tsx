@@ -55,7 +55,11 @@ export default function CheckoutPage() {
       toast.success("Order created successfully!", { icon: "✅" });
 
       if (url) {
-        router.push(url);
+        if (url.startsWith("http")) {
+          window.location.assign(url);
+        } else {
+          router.push(url);
+        }
       }
     } catch (error) {
       console.error("Error creating order:", error);
