@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@react-email/render": "^2.0.8",
     "@types/bcrypt": "^6.0.0",
     "@types/qs": "^6.15.0",
     "axios": "^1.15.0",
@@ -31,6 +32,7 @@
     "react-hook-form": "^7.74.0",
     "react-hot-toast": "^2.6.0",
     "react-use": "^17.6.0",
+    "resend": "^6.12.2",
     "shadcn": "^4.1.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",

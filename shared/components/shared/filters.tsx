@@ -98,20 +98,23 @@ export const Filters: React.FC<Props> = ({ className }) => {
             placeholder="0"
             min={MIN_PRICE}
             max={MAX_PRICE}
-            value={String(price.priceFrom)}
-            onChange={(e) =>
-              setPrice({ ...price, priceFrom: capPriceByMax(e.target.value) })
-            }
+            value={price.priceFrom ?? ""}
+            onChange={(e) => {
+              const capped = capPriceByMax(e.target.value);
+              if (capped !== undefined)
+                setPrice({ ...price, priceFrom: capped });
+            }}
           />
           <Input
             type="number"
             placeholder="30$"
             min={10}
             max={MAX_PRICE}
-            value={String(price.priceTo)}
-            onChange={(e) =>
-              setPrice({ ...price, priceTo: capPriceByMax(e.target.value) })
-            }
+            value={price.priceTo ?? ""}
+            onChange={(e) => {
+              const capped = capPriceByMax(e.target.value);
+              if (capped !== undefined) setPrice({ ...price, priceTo: capped });
+            }}
           />
         </div>
 

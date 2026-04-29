@@ -2,7 +2,6 @@
 
 import { FormProvider, useForm } from "react-hook-form";
 import { CheckoutSidebar, Container, Title } from "@/components/shared";
-
 import { useCart } from "@/shared/hooks/use-cart";
 import { useCartItemActions } from "@/shared/hooks/use-cart-item-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,8 +15,14 @@ import {
   CheckoutFormValues,
 } from "@/components/shared/checkout/checkout-schema";
 import { cn } from "@/shared/lib/utils";
+import { createOrder } from "@/app/actions";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { totalAmount, items, updateItemQuantity, removeCartItem, loading } =
     useCart();
   const isInitialCartLoading = loading && items.length === 0;
@@ -43,9 +48,20 @@ export default function CheckoutPage() {
       comments: "",
     },
   });
+  const onSubmit = async (data: CheckoutFormValues) => {
+    try {
+      setIsSubmitting(true);
+      const url = await createOrder(data);
+      toast.success("Order created successfully!", { icon: "✅" });
 
-  const onSubmit = (data: CheckoutFormValues) => {
-    console.log("Form data:", data);
+      if (url) {
+        router.push(url);
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      setIsSubmitting(false);
+      toast.error("Failed to create order. Please try again.", { icon: "❌" });
+    }
   };
 
   return (
@@ -81,7 +97,7 @@ export default function CheckoutPage() {
             <div className="w-[450px]">
               <CheckoutSidebar
                 totalAmount={totalAmount}
-                loading={isInitialCartLoading}
+                loading={isInitialCartLoading || isSubmitting}
               />
             </div>
           </div>
