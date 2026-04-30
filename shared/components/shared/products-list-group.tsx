@@ -8,7 +8,6 @@ import { ProductCard } from "./product-card";
 import { useCategoryStore } from "@/shared/store/category";
 import { ProductWithRelations } from "@/@types/prisma";
 
-
 interface Props {
   title: string;
   products: ProductWithRelations[];
@@ -29,7 +28,7 @@ export const ProductsListGroup: React.FC<Props> = ({
   const intersection = useIntersection(
     intersectionRef as React.RefObject<HTMLElement>,
     {
-      threshold: 0.4,
+      threshold: 0.05,
     },
   );
 
@@ -43,7 +42,12 @@ export const ProductsListGroup: React.FC<Props> = ({
     <div className={className} id={title} ref={intersectionRef}>
       <Title text={title} size="lg" className="mb-5 font-extrabold" />
 
-      <div className={cn("grid grid-cols-3 gap-[50px]")}>
+      <div
+        className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-[50px]",
+          listClassName,
+        )}
+      >
         {products.map((product) => (
           <ProductCard
             key={product.id}

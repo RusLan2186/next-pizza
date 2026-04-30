@@ -48,6 +48,75 @@ export const findPizzas = async (params: GetSearchParams) => {
   const hasPizzaFilters =
     sizes.length > 0 || pizzaTypes.length > 0 || ingredientsIdArr.length > 0;
 
+  // Pizza cards show "from" price (minimum variant price),
+  // so for pizza products we filter by that minimum price semantics.
+  const priceFilter = {
+    OR: [
+      {
+        AND: [
+          { variants: { some: { pizzaType: { not: null } } } },
+          { variants: { some: { price: { lte: maxPrice } } } },
+          { variants: { none: { price: { lt: minPrice } } } },
+        ],
+      },
+      {
+        AND: [
+          { variants: { every: { pizzaType: null } } },
+          {
+            variants: {
+              some: {
+                price: {
+                  gte: minPrice,
+                  lte: maxPrice,
+                },
+              },
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  const pizzaSpecificFilter = hasPizzaFilters
+    ? {
+        OR: [
+          {
+            AND: [
+              { variants: { some: { pizzaType: { not: null } } } },
+              ...(ingredientsIdArr.length
+                ? [
+                    {
+                      ingredients: {
+                        some: { id: { in: ingredientsIdArr } },
+                      },
+                    },
+                  ]
+                : []),
+              ...(sizes.length || pizzaTypes.length
+                ? [
+                    {
+                      variants: {
+                        some: {
+                          ...(sizes.length ? { size: { in: sizes } } : {}),
+                          ...(pizzaTypes.length
+                            ? { pizzaType: { in: pizzaTypes } }
+                            : {}),
+                        },
+                      },
+                    },
+                  ]
+                : []),
+            ],
+          },
+          {
+            variants: {
+              every: { pizzaType: null },
+            },
+          },
+        ],
+      }
+    : undefined;
+
   const categories = await prisma.category.findMany({
     include: {
       products: {
@@ -55,58 +124,10 @@ export const findPizzas = async (params: GetSearchParams) => {
           id: "desc",
         },
         where: {
-          // Price filter applies to all products — must have at least one variant in range
-          variants: {
-            some: {
-              price: {
-                gte: minPrice,
-                lte: maxPrice,
-              },
-            },
-          },
-          // Pizza-specific filters (size, type, ingredients) only apply to pizza products.
-          // Non-pizza products (variants without pizzaType) always pass.
-          ...(hasPizzaFilters
-            ? {
-                OR: [
-                  // Pizza products matching all selected filters
-                  {
-                    variants: {
-                      some: { pizzaType: { not: null } },
-                    },
-                    ...(ingredientsIdArr.length
-                      ? {
-                          ingredients: {
-                            some: { id: { in: ingredientsIdArr } },
-                          },
-                        }
-                      : {}),
-                    ...(sizes.length || pizzaTypes.length
-                      ? {
-                          AND: {
-                            variants: {
-                              some: {
-                                ...(sizes.length
-                                  ? { size: { in: sizes } }
-                                  : {}),
-                                ...(pizzaTypes.length
-                                  ? { pizzaType: { in: pizzaTypes } }
-                                  : {}),
-                              },
-                            },
-                          },
-                        }
-                      : {}),
-                  },
-                  // Non-pizza products — always pass pizza-specific filters
-                  {
-                    variants: {
-                      every: { pizzaType: null },
-                    },
-                  },
-                ],
-              }
-            : {}),
+          AND: [
+            priceFilter,
+            ...(pizzaSpecificFilter ? [pizzaSpecificFilter] : []),
+          ],
         },
         include: {
           ingredients: true,

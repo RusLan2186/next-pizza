@@ -54,7 +54,8 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent
         className={
-          "flex flex-col justify-between pb-0 bg-[#F4F1EE] " + (className ?? "")
+          "data-[side=right]:w-screen data-[side=right]:max-w-none sm:data-[side=right]:w-3/4 sm:data-[side=right]:max-w-sm flex flex-col justify-between pb-0 bg-[#F4F1EE] " +
+          (className ?? "")
         }
       >
         <div
@@ -124,19 +125,21 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({
                 </div>
               </div>
 
-              <SheetFooter className=" bg-white p-8">
+              <SheetFooter className="bg-white p-4 sm:p-8">
                 <div>
-                  <div className="flex mb-4 ">
-                    <span className="flex flex-1 text-lg text-neutral-500">
+                  <div className="flex mb-3 sm:mb-4">
+                    <span className="flex flex-1 text-base sm:text-lg text-neutral-500">
                       Total
-                      <div className="flex-1 border-b pb-8 border-dashed border-b-neutral-200 relative -top-1 mx-2" />
+                      <div className="flex-1 border-b pb-6 sm:pb-8 border-dashed border-b-neutral-200 relative -top-1 mx-2" />
                     </span>
 
-                    <span className="font-bold text-lg">{totalAmount} $</span>
+                    <span className="font-bold text-base sm:text-lg">
+                      {totalAmount} $
+                    </span>
                   </div>
                   <Button
                     type="button"
-                    className="w-full h-12 text-base"
+                    className="w-full h-11 sm:h-12 text-sm sm:text-base"
                     loading={isCheckoutPending}
                     onClick={onClickCheckout}
                   >

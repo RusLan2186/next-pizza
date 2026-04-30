@@ -4,13 +4,12 @@
 
 html {
   scroll-behavior: smooth;
-    scroll-margin-top: 100px;
+  scroll-margin-top: 100px;
 }
 
 @media screen and (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-   
   }
 }
 
@@ -66,6 +65,29 @@ html {
 
 .scrollbar::-webkit-scrollbar-thumb:hover {
   background: #dbdadd;
+}
+
+.categories-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #ff5a00 #ffe5d3;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.categories-scroll::-webkit-scrollbar-track {
+  background: #ffe5d3;
+  border-radius: 9999px;
+}
+
+.categories-scroll::-webkit-scrollbar-thumb {
+  background: #ff5a00;
+  border-radius: 9999px;
+}
+
+.categories-scroll::-webkit-scrollbar-thumb:hover {
+  background: #e65100;
 }
 
 @layer utilities {

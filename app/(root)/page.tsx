@@ -76,8 +76,12 @@ export default async function Home({
           message={paymentToast.message}
         />
       )}
-      <Container className="mt-10">
-        <Title text="All pizzas" size="lg" className="font-extrabold mb-5" />
+      <Container className="mt-6 md:mt-10">
+        <Title
+          text="All pizzas"
+          size="lg"
+          className="font-extrabold mb-3 md:mb-5"
+        />
       </Container>
       <TopBar
         categories={categories.filter(
@@ -86,8 +90,9 @@ export default async function Home({
       />
 
       <Container className="pb-14 mt-10">
-        <div className="flex gap-[100px]">
-          <div className="w-[250px]">
+        <div className="flex gap-0 md:gap-6 lg:gap-10 xl:gap-[100px]">
+          {/* Desktop sidebar filters */}
+          <div className="hidden md:block w-[250px] shrink-0">
             <Suspense>
               <Filters />
             </Suspense>
