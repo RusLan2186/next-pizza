@@ -98,11 +98,21 @@ export const ChoosePizzaForm: React.FC<Props> = ({
   };
 
   return (
-    <div className={cn(className, "flex flex-1 relative")}>
-      <PizzaImage src={imageUrl} name={name} size={size} />
+    <div
+      className={cn(
+        className,
+        "relative flex flex-1 max-[1050px]:h-full max-[1050px]:flex-col",
+      )}
+    >
+      <PizzaImage
+        src={imageUrl}
+        name={name}
+        size={size}
+        className="max-[1050px]:p-4"
+      />
 
-      <div className="w-[490px] bg-[#f7f6f5] p-7">
-        <h2 className="text-[28px] font-extrabold mb-2 leading-[32px]">
+      <div className="w-[490px] bg-[#f7f6f5] p-7 max-[1050px]:w-full max-[1050px]:p-5">
+        <h2 className="text-[28px] font-extrabold mb-2 leading-[32px] max-[1050px]:text-2xl max-[1050px]:leading-[30px]">
           {name}
         </h2>
 
@@ -122,8 +132,8 @@ export const ChoosePizzaForm: React.FC<Props> = ({
           />
         </div>
 
-        <div className="bg-gray-50 p-5 rounded-md h-[420px] overflow-auto scrollbar">
-          <div className="grid grid-cols-3 gap-3">
+        <div className="bg-gray-50 p-5 rounded-md h-[420px] overflow-auto scrollbar max-[1050px]:p-4 max-[1050px]:h-[320px]">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(135px,1fr))] gap-3">
             {ingredients?.map((ingredient) => (
               <IngredientItem
                 key={ingredient.id}
@@ -140,7 +150,7 @@ export const ChoosePizzaForm: React.FC<Props> = ({
         <Button
           loading={loading}
           onClick={handleClickAddCart}
-          className="h-[55px] px-10 text-base rounded-[18px] w-full mt-10"
+          className="h-[55px] px-10 text-base rounded-[18px] w-full mt-10 max-[1050px]:h-[50px] max-[1050px]:mt-6"
         >
           Add to cart {totalPrice}$
         </Button>

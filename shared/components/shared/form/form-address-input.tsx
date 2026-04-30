@@ -150,7 +150,7 @@ export const FormAddressInput = <TFieldValues extends FieldValues>({
 
   return (
     <div className={className}>
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3 xs:flex-row sm:flex-row">
         <div className="relative flex-1" ref={containerRef}>
           <Input
             ref={field.ref}
@@ -186,7 +186,7 @@ export const FormAddressInput = <TFieldValues extends FieldValues>({
           value={scope}
           onValueChange={(value) => setScope(value as SearchScope)}
         >
-          <SelectTrigger className="h-12 w-[160px] px-3 text-sm">
+          <SelectTrigger className="h-12 w-full px-3 text-sm sm:w-[160px]">
             <SelectValue placeholder="Country" />
           </SelectTrigger>
           <SelectContent>

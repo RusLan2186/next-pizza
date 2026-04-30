@@ -1,5 +1,4 @@
 import { cn } from "@/shared/lib/utils";
-import { log } from "node:console";
 
 interface Props {
   src: string;
@@ -9,30 +8,28 @@ interface Props {
 }
 
 export const PizzaImage: React.FC<Props> = ({ src, name, size, className }) => {
-
   return (
     <div
       className={cn(
-        "flex items-center justify-center flex-1 relative w-full",
+        "relative flex min-h-[540px] w-full flex-1 items-center justify-center overflow-hidden max-[1050px]:min-h-[340px]",
         className,
       )}
     >
       <img
         className={cn(
-          "relative left-2 top-2 transition-all z-[18] duration-300",
-          className,
+          "relative left-2 top-2 z-[18] object-contain transition-all duration-300 max-[1050px]:left-0 max-[1050px]:top-0",
           {
-            "w-[300px] h-[300px]": size === 20,
-            "w-[400px] h-[400px]": size === 30,
-            "w-[500px] h-[500px]": size === 40,
+            "h-[300px] w-[300px] max-[1050px]:h-[200px] max-[1050px]:w-[200px]":
+              size === 20,
+            "h-[400px] w-[400px] max-[1050px]:h-[250px] max-[1050px]:w-[250px]":
+              size === 30,
+            "h-[500px] w-[500px] max-[1050px]:h-[290px] max-[1050px]:w-[290px]":
+              size === 40,
           },
         )}
         src={src}
         alt={name}
       />
-
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border-dashed border-2 rounded-full border-gray-200 w-[450px] h-[450px]" />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border-dotted border-2 rounded-full border-gray-100 w-[370px] h-[370px]" />
     </div>
   );
 };

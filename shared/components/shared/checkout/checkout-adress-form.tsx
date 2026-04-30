@@ -3,17 +3,13 @@ import { FormAddressInput, FormTextarea } from "../form";
 import { CheckoutFormValues } from "./checkout-schema";
 
 interface Props {
-
   className?: string;
 }
 
-export const CheckoutAdressForm: React.FC<Props> = ({
-  className,
-
-}) => {
+export const CheckoutAdressForm: React.FC<Props> = ({ className }) => {
   return (
     <WhiteBlock title="3. Delivery info" className={className}>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4 md:gap-5">
         <FormAddressInput<CheckoutFormValues>
           name="adress"
           suggestionIdName="adressSuggestionId"

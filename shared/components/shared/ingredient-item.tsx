@@ -22,27 +22,30 @@ export const IngredientItem: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "flex items-center flex-col p-1 rounded-md w-32 text-center relative shadow-md bg-white cursor-pointer",
+        "flex min-h-[190px] w-full items-center justify-between flex-col rounded-xl p-3 text-center relative shadow-sm bg-white cursor-pointer transition-shadow hover:shadow-md",
         { "border border-primary": active },
         className,
-      )} onClick={onClick}
+      )}
+      onClick={onClick}
     >
       {active && (
-        <CircleCheck className="absolute top-2 right-2 text-primary" />
+        <CircleCheck className="absolute top-2 right-2 h-5 w-5 text-primary" />
       )}
 
       {imageUrl && (
         <Image
-          width={110}
-          height={110}
+          width={90}
+          height={90}
           src={imageUrl}
           alt={name}
-          className="object-cover object-center"
+          className="h-[90px] w-[90px] object-contain object-center"
         />
       )}
 
-      <span className="text-xs mb-1">{name}</span>
-      <span className="font-bold">{price}$</span>
+      <div className="mt-2 flex flex-1 flex-col justify-between">
+        <span className="line-clamp-2 text-xs leading-4">{name}</span>
+        <span className="mt-2 font-bold text-sm">{price}$</span>
+      </div>
     </div>
   );
 };

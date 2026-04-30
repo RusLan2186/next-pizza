@@ -30,7 +30,7 @@ export const CheckoutCart: React.FC<Props> = ({
 }) => {
   return (
     <WhiteBlock className={className} title="1. Cart">
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4 md:gap-5">
         {loading &&
           items.length === 0 &&
           [...Array(4)].map((_, i) => <CheckoutItemSceleton key={i} />)}

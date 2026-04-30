@@ -13,11 +13,13 @@ export const CheckoutItemDetails: React.FC<Props> = ({
   value,
 }) => {
   return (
-    <div className={cn("flex items-center  my-4")}>
-      <span className="flex  text-lg text-neutral-500">{title}</span>
-      <div className="flex-1 border-b border-dashed border-b-neutral-200 relative -bottom-2 mx-2"></div>
+    <div className={cn("my-3 flex items-center md:my-4", className)}>
+      <span className="flex text-base text-neutral-500 md:text-lg">
+        {title}
+      </span>
+      <div className="relative -bottom-2 mx-2 flex-1 border-b border-dashed border-b-neutral-200"></div>
 
-      <span className="font-bold text-lg">{value} </span>
+      <span className="text-base font-bold md:text-lg">{value} </span>
     </div>
   );
 };

@@ -18,14 +18,16 @@ export const CheckoutSidebar: React.FC<Props> = ({ totalAmount, loading }) => {
   const totalPrice = totalAmount + deliveryPrice + vatPrice;
 
   return (
-    <WhiteBlock className="pb-4 sticky top-4">
+    <WhiteBlock className="pb-4 lg:sticky lg:top-4">
       <div className="flex flex-col gap-1">
-        <span className="text-xl">Total Price:</span>
+        <span className="text-lg md:text-xl">Total Price:</span>
 
         {loading ? (
           <Skeleton className="h-11 w-40" />
         ) : (
-          <span className="text-[30px] font-extrabold">{`${totalPrice}`}$</span>
+          <span className="text-[28px] font-extrabold md:text-[30px]">
+            {`${totalPrice}`}$
+          </span>
         )}
       </div>
 
@@ -78,7 +80,7 @@ export const CheckoutSidebar: React.FC<Props> = ({ totalAmount, loading }) => {
       <Button
         type="submit"
         loading={loading}
-        className="w-full h-12 rounded-2xl mt-6 text-base font-bold"
+        className="mt-5 h-12 w-full rounded-2xl text-base font-bold md:mt-6"
       >
         Proceed to checkout
         <ArrowRight className="w-5 ml-2" />
