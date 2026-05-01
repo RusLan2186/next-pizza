@@ -25,6 +25,8 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.7.0",
     "next": "16.2.1",
+    "next-auth": "^4.24.14",
+    "nextjs-toploader": "^3.9.17",
     "qs": "^6.15.1",
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",

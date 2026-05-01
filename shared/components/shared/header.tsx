@@ -1,11 +1,14 @@
+"use client";
+
 import { cn } from "@/shared/lib/utils";
 import { Container } from "./container";
 import Image from "next/image";
-import { Button } from "../ui/button";
-import { User } from "lucide-react";
 import Link from "next/link";
 import { SearchInput } from "./search-input";
+import { ProfileButton } from "./profile-button";
 import { CartButton } from "./cart-button";
+import { AuthModal } from "./modals";
+import { useState } from "react";
 
 interface Props {
   className?: string;
@@ -18,6 +21,8 @@ export const Header: React.FC<Props> = ({
   hasSearch = true,
   hasCart = true,
 }) => {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   return (
     <header className={cn("border-b", className)}>
       <Container className="flex items-center justify-between gap-3 py-4">
@@ -41,13 +46,11 @@ export const Header: React.FC<Props> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            variant="outline"
-            className="flex items-center gap-1 text-[16px]"
-          >
-            <User size={16} />
-            <span className="hidden sm:inline">Enter</span>
-          </Button>
+          <AuthModal
+            open={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+          <ProfileButton onClickSignIn={() => setIsAuthModalOpen(true)} />
 
           {hasCart && <CartButton />}
         </div>

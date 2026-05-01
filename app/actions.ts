@@ -8,8 +8,10 @@ import {
   ORDER_DELIVERY_PRICE,
   ORDER_VAT_PERCENT,
 } from "@/shared/constants/order";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, Prisma } from "@prisma/client";
 import { cookies } from "next/headers";
+import { getUserSession } from "@/shared/lib/get-user-session";
+import { hashSync } from "bcrypt";
 
 export async function createOrder(data: CheckoutFormValues) {
   try {
@@ -127,6 +129,38 @@ export async function createOrder(data: CheckoutFormValues) {
     return paymentUrl;
   } catch (error) {
     console.error("[Create Order] Error creating order:", error);
+    throw error;
+  }
+}
+
+export async function updateUserInfo(body: Prisma.UserUpdateInput) {
+  try {
+    const currentUser = await getUserSession();
+
+    if (!currentUser) {
+      throw new Error("User not authenticated");
+    }
+
+    const findUser = await prisma.user.findFirst({
+      where: {
+        id: Number(currentUser.id),
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: Number(currentUser.id),
+      },
+      data: {
+        email: body.email,
+        fullName: body.fullName,
+        password: body.password
+          ? hashSync(body.password as string, 10)
+          : findUser?.password,
+      },
+    });
+  } catch (error) {
+    console.error("[Update User] Error updating user info:", error);
     throw error;
   }
 }

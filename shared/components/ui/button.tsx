@@ -39,6 +39,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
+  spinnerClassName?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -51,6 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       disabled,
       loading,
+      spinnerClassName,
       ...props
     },
     ref,
@@ -63,7 +65,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {!loading ? children : <Loader2 className="w-5 h-5 animate-spin" />}
+        {!loading ? (
+          children
+        ) : (
+          <Loader2 className={cn("w-5 h-5 animate-spin", spinnerClassName)} />
+        )}
       </Comp>
     );
   },

@@ -5,6 +5,6 @@ export { Select } from "./select";
 export { Skeleton } from "./skeleton";
 export { Drawer } from "./drawer";
 export { Popover } from "./popover";
-export { Dialog } from "./dialog";
+export *  from "./dialog";
 export { Button } from "./button";
 export { Textarea } from "./textarea";
