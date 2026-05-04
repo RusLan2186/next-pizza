@@ -1,45 +1,87 @@
 import { prisma } from "@/prisma/prisma-client";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { findOrCreateCart } from "@/shared/lib/find-or-create-cart";
 import { CreateCartItemValues } from "@/shared/services/dto/cart.dto";
 import { updateCartTotalAmount } from "@/shared/lib/update-cart-total-amount";
+import { getUserSession } from "@/shared/lib/get-user-session";
+
+const emptyCart = { totalAmount: 0, cartItems: [] };
+
+const cartInclude = {
+  cartItems: {
+    orderBy: {
+      createdAt: "desc" as const,
+    },
+    include: {
+      productItem: {
+        include: {
+          product: true,
+        },
+      },
+      ingredients: true,
+    },
+  },
+};
 
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("cartToken")?.value;
+    const session = await getUserSession();
+
+    if (session?.id) {
+      const userId = Number(session.id);
+      if (!Number.isFinite(userId)) {
+        return NextResponse.json(emptyCart);
+      }
+
+      let userCart = await prisma.cart.findFirst({
+        where: { userId },
+        include: cartInclude,
+      });
+
+      if (!userCart && token) {
+        const guestCart = await prisma.cart.findFirst({
+          where: { token, userId: null },
+          include: cartInclude,
+        });
+
+        if (guestCart) {
+          userCart = await prisma.cart.update({
+            where: { id: guestCart.id },
+            data: { userId },
+            include: cartInclude,
+          });
+        }
+      }
+
+      if (!userCart) {
+        return NextResponse.json(emptyCart);
+      }
+
+      const response = NextResponse.json(userCart);
+      if (token !== userCart.token) {
+        response.cookies.set("cartToken", userCart.token, { path: "/" });
+      }
+
+      return response;
+    }
 
     if (!token) {
-      return NextResponse.json({ totalAmount: 0, cartItems: [] });
+      return NextResponse.json(emptyCart);
     }
 
-    const userCart = await prisma.cart.findFirst({
-      where: {
-        OR: [{ token }],
-      },
-
-      include: {
-        cartItems: {
-          orderBy: {
-            createdAt: "desc",
-          },
-          include: {
-            productItem: {
-              include: {
-                product: true,
-              },
-            },
-            ingredients: true,
-          },
-        },
-      },
+    const guestCart = await prisma.cart.findFirst({
+      where: { token, userId: null },
+      include: cartInclude,
     });
 
-    if (!userCart) {
-      return NextResponse.json({ totalAmount: 0, cartItems: [] });
+    if (!guestCart) {
+      const response = NextResponse.json(emptyCart);
+      response.cookies.set("cartToken", crypto.randomUUID(), { path: "/" });
+      return response;
     }
 
-    return NextResponse.json(userCart);
+    return NextResponse.json(guestCart);
   } catch (error) {
     console.log("[CART_GET] Server error", error);
     return NextResponse.json(
@@ -52,12 +94,65 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     let token = req.cookies.get("cartToken")?.value;
+    const session = await getUserSession();
+    const userId = session?.id ? Number(session.id) : null;
 
-    if (!token) {
-      token = crypto.randomUUID();
+    let userCart;
+
+    if (userId && Number.isFinite(userId)) {
+      userCart = await prisma.cart.findFirst({
+        where: { userId },
+      });
+
+      if (!userCart && token) {
+        const guestCart = await prisma.cart.findFirst({
+          where: { token, userId: null },
+        });
+
+        if (guestCart) {
+          userCart = await prisma.cart.update({
+            where: { id: guestCart.id },
+            data: { userId },
+          });
+        }
+      }
+
+      if (!userCart) {
+        userCart = await prisma.cart.create({
+          data: {
+            token: crypto.randomUUID(),
+            userId,
+          },
+        });
+      }
+
+      token = userCart.token;
+    } else {
+      if (!token) {
+        token = crypto.randomUUID();
+      }
+
+      userCart = await prisma.cart.findFirst({
+        where: {
+          token,
+          userId: null,
+        },
+      });
+
+      if (!userCart) {
+        const existingCartWithToken = await prisma.cart.findFirst({
+          where: { token },
+        });
+
+        if (existingCartWithToken) {
+          token = crypto.randomUUID();
+        }
+
+        userCart = await prisma.cart.create({
+          data: { token },
+        });
+      }
     }
-
-    const userCart = await findOrCreateCart(token);
 
     const data = (await req.json()) as CreateCartItemValues;
 

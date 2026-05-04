@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { formLoginSchema, TFormLoginValues } from "./schema";
+import { formLoginSchema, TFormLoginValues } from "./schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Title } from "@/components/shared/title";
 import { FormInput } from "@/components/shared/form";

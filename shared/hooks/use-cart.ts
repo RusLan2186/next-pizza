@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useCartStore } from "../store";
 import { CreateCartItemValues } from "../services/dto/cart.dto";
 import { CartStateItem } from "../lib/get-cart-details";
@@ -15,11 +16,13 @@ type ReturnProps = {
 };
 
 export const useCart = (): ReturnProps => {
- const cartState = useCartStore((state) => state);
+  const cartState = useCartStore((state) => state);
+  const fetchCartItems = useCartStore((state) => state.fetchCartItems);
+  const { status, data: session } = useSession();
 
   useEffect(() => {
-    cartState.fetchCartItems();
-  }, []);
+    fetchCartItems();
+  }, [fetchCartItems, status, session?.user?.id]);
 
-  return cartState
+  return cartState;
 };

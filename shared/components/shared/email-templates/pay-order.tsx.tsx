@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface PayOrderProps {
   orderId: number;
   subtotalAmount: number;
@@ -14,7 +16,7 @@ export const PayOrderTemplate = ({
   deliveryAmount,
   totalAmount,
   paymentUrl,
-}: PayOrderProps) => {
+}: PayOrderProps): React.JSX.Element => {
   return (
     <div>
       <h1>Order {orderId}!</h1>

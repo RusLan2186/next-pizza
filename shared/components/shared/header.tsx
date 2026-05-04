@@ -8,7 +8,8 @@ import { SearchInput } from "./search-input";
 import { ProfileButton } from "./profile-button";
 import { CartButton } from "./cart-button";
 import { AuthModal } from "./modals";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Props {
   className?: string;
@@ -22,6 +23,17 @@ export const Header: React.FC<Props> = ({
   hasCart = true,
 }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("auth") !== "login") {
+      return;
+    }
+
+    setIsAuthModalOpen(true);
+    router.replace("/", { scroll: false });
+  }, [searchParams, router]);
 
   return (
     <header className={cn("border-b", className)}>

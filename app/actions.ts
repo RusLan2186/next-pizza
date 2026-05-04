@@ -1,6 +1,9 @@
 "use server";
 
-import { PayOrderTemplate } from "@/components/shared/email-templates";
+import {
+  PayOrderTemplate,
+  VerificationUserTemplate,
+} from "@/components/shared/email-templates";
 import { CheckoutFormValues } from "@/components/shared/checkout/checkout-schema";
 import { prisma } from "@/prisma/prisma-client";
 import { createPayment, sendEmail } from "@/shared/lib";
@@ -163,4 +166,84 @@ export async function updateUserInfo(body: Prisma.UserUpdateInput) {
     console.error("[Update User] Error updating user info:", error);
     throw error;
   }
+}
+
+export async function registerUser(body: Prisma.UserCreateInput) {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: body.email,
+      },
+    });
+
+    if (user?.verified) {
+      throw new Error("User already exists");
+    }
+
+    const targetUser =
+      user ??
+      (await prisma.user.create({
+        data: {
+          email: body.email,
+          fullName: body.fullName,
+          password: hashSync(String(body.password), 10),
+        },
+      }));
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await prisma.verificationCode.upsert({
+      where: {
+        userId: targetUser.id,
+      },
+      update: {
+        code,
+        createdAt: new Date(),
+      },
+      create: {
+        code,
+        userId: targetUser.id,
+      },
+    });
+
+    const appUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
+    const publicAppUrl =
+      process.env.NODE_ENV === "development" ? "http://localhost:3000" : appUrl;
+    const confirmUrl = `${publicAppUrl}/verify-email?code=${code}`;
+
+    await sendEmail(
+      targetUser.email,
+      "Next Pizza | Confirm your account ",
+      VerificationUserTemplate({
+        code,
+        confirmUrl,
+      }),
+    );
+  } catch (error) {
+    console.error("[Create User] Error registering user:", error);
+    throw error;
+  }
+}
+
+export async function verifyEmail(code: string): Promise<void> {
+  if (!code?.trim()) {
+    throw new Error("Please enter the verification code.");
+  }
+
+  const verificationCode = await prisma.verificationCode.findFirst({
+    where: { code: code.trim() },
+  });
+
+  if (!verificationCode) {
+    throw new Error("Invalid or expired verification code.");
+  }
+
+  await prisma.user.update({
+    where: { id: verificationCode.userId },
+    data: { verified: new Date() },
+  });
+
+  await prisma.verificationCode.delete({
+    where: { id: verificationCode.id },
+  });
 }
