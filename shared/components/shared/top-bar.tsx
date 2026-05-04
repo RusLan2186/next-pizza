@@ -12,6 +12,7 @@ interface Props {
 export const TopBar: React.FC<Props> = ({ categories, className }) => {
   return (
     <div
+      data-top-bar
       className={cn(
         "sticky top-0 z-10 bg-white py-5 shadow-lg shadow-black/5",
         className,
