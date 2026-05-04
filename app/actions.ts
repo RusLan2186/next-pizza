@@ -16,6 +16,48 @@ import { cookies } from "next/headers";
 import { getUserSession } from "@/shared/lib/get-user-session";
 import { hashSync } from "bcrypt";
 
+const LOCALHOST_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i;
+
+const normalizeBaseUrl = (value?: string): string | null => {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const withProtocol = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+
+  return withProtocol.replace(/\/+$/, "");
+};
+
+const getPublicAppUrl = () => {
+  const isProduction = process.env.NODE_ENV === "production";
+  const candidates = [
+    process.env.APP_URL,
+    process.env.NEXTAUTH_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeBaseUrl(candidate);
+
+    if (!normalized) {
+      continue;
+    }
+
+    if (isProduction && LOCALHOST_REGEX.test(normalized)) {
+      continue;
+    }
+
+    return normalized;
+  }
+
+  return "http://localhost:3000";
+};
+
 export async function createOrder(data: CheckoutFormValues) {
   try {
     const cookieStore = cookies();
@@ -76,7 +118,7 @@ export async function createOrder(data: CheckoutFormValues) {
       },
     });
 
-    const appUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
+    const appUrl = getPublicAppUrl();
     const resultUrl = appUrl;
     const payment = createPayment({
       orderId: order.id,
@@ -205,7 +247,7 @@ export async function registerUser(body: Prisma.UserCreateInput) {
       },
     });
 
-    const appUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
+    const appUrl = getPublicAppUrl();
     const confirmUrl = `${appUrl}/verify-email?code=${code}`;
 
     await sendEmail(
