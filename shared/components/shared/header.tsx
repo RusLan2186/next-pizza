@@ -8,8 +8,37 @@ import { SearchInput } from "./search-input";
 import { ProfileButton } from "./profile-button";
 import { CartButton } from "./cart-button";
 import { AuthModal } from "./modals";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
+interface AuthModalControllerProps {
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}
+
+function AuthModalController({
+  isOpen,
+  onOpen,
+  onClose,
+}: AuthModalControllerProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const shouldAutoOpenAuth = searchParams.get("auth") === "login";
+  const isModalOpen = isOpen || shouldAutoOpenAuth;
+
+  useEffect(() => {
+    if (!shouldAutoOpenAuth) return;
+    router.replace("/", { scroll: false });
+  }, [shouldAutoOpenAuth, router]);
+
+  return (
+    <>
+      <AuthModal open={isModalOpen} onClose={onClose} />
+      <ProfileButton onClickSignIn={onOpen} />
+    </>
+  );
+}
 
 interface Props {
   className?: string;
@@ -23,18 +52,6 @@ export const Header: React.FC<Props> = ({
   hasCart = true,
 }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const shouldAutoOpenAuth = searchParams.get("auth") === "login";
-  const isModalOpen = isAuthModalOpen || shouldAutoOpenAuth;
-
-  useEffect(() => {
-    if (!shouldAutoOpenAuth) {
-      return;
-    }
-
-    router.replace("/", { scroll: false });
-  }, [shouldAutoOpenAuth, router]);
 
   return (
     <header className={cn("border-b", className)}>
@@ -64,11 +81,13 @@ export const Header: React.FC<Props> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
-          <AuthModal
-            open={isModalOpen}
-            onClose={() => setIsAuthModalOpen(false)}
-          />
-          <ProfileButton onClickSignIn={() => setIsAuthModalOpen(true)} />
+          <Suspense fallback={<ProfileButton onClickSignIn={() => setIsAuthModalOpen(true)} />}>
+            <AuthModalController
+              isOpen={isAuthModalOpen}
+              onOpen={() => setIsAuthModalOpen(true)}
+              onClose={() => setIsAuthModalOpen(false)}
+            />
+          </Suspense>
 
           {hasCart && <CartButton />}
         </div>

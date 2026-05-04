@@ -188,9 +188,9 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      const updatedUserCart = await updateCartTotalAmount(token);
+      const updatedUserCart = await updateCartTotalAmount(token!);
       const resp = NextResponse.json(updatedUserCart);
-      resp.cookies.set("cartToken", token);
+      resp.cookies.set("cartToken", token!);
       return resp;
     }
 
@@ -205,9 +205,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const updatedUserCart = await updateCartTotalAmount(token);
+    const updatedUserCart = await updateCartTotalAmount(token!);
     const resp = NextResponse.json(updatedUserCart);
-    resp.cookies.set("cartToken", token);
+    resp.cookies.set("cartToken", token!);
     return resp;
   } catch (error) {
     console.log("[CART_POST] Server error", error);
