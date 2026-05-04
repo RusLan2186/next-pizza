@@ -31,9 +31,10 @@ export const SortPopup: React.FC<Props> = ({ className }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const sortByParam = searchParams.get("sortBy");
 
-  const selectedSort: SortValue = isSortValue(searchParams.get("sortBy"))
-    ? searchParams.get("sortBy")
+  const selectedSort: SortValue = isSortValue(sortByParam)
+    ? sortByParam
     : "popularity";
 
   const onChangeSort = (value: string) => {
@@ -56,18 +57,19 @@ export const SortPopup: React.FC<Props> = ({ className }) => {
   return (
     <Select value={selectedSort} onValueChange={onChangeSort}>
       <SelectTrigger
+        style={{ boxShadow: "none", outline: "none" }}
         className={cn(
-          "inline-flex h-[52px] max-w-[180px] items-center gap-1 rounded-2xl border-0 bg-gray-50 px-3 transition-colors hover:bg-gray-100 focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-transparent sm:max-w-none sm:gap-2 sm:px-5",
+          "inline-flex h-[52px] w-[170px] max-w-none items-center gap-1 rounded-2xl !border-0 !border-transparent bg-gray-50 px-3 transition-colors hover:bg-gray-100 hover:!border-transparent focus:!border-transparent focus-visible:!border-transparent !ring-0 focus-visible:!ring-0 focus-visible:!ring-transparent data-[state=open]:!border-transparent data-[state=open]:!ring-0 data-[state=open]:shadow-none sm:w-[220px] sm:gap-2 sm:px-5",
           className,
         )}
       >
         <ArrowDownUp size={16} />
         <b className="hidden sm:inline">Sort by</b>
-        <b className="ml-2 max-w-[88px] truncate text-primary sm:ml-3 sm:max-w-none">
+        <b className="ml-2 min-w-[64px] truncate text-left text-primary sm:ml-3 sm:min-w-[78px]">
           <SelectValue />
         </b>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="border border-gray-200 !ring-0 shadow-md">
         {sortItems.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}

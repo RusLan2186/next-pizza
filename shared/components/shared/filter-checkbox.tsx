@@ -18,7 +18,7 @@ export const FilterCheckbox: React.FC<FilterChecboxProps> = ({
   name,
 }) => {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="group flex items-center space-x-2 rounded-xl px-1 py-1 transition-colors hover:bg-gray-50">
       <Checkbox
         onCheckedChange={onCheckedChange}
         checked={checked}
@@ -28,7 +28,7 @@ export const FilterCheckbox: React.FC<FilterChecboxProps> = ({
       />
       <label
         htmlFor={`checkbox-${name}-${String(value)}`}
-        className="leading-none cursor-pointer flex-1 capitalize"
+        className="flex-1 cursor-pointer leading-none capitalize transition-colors group-hover:text-primary"
       >
         {text}
       </label>
