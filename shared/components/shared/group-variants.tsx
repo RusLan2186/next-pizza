@@ -34,7 +34,7 @@ export const GroupVariants: React.FC<Props> = ({
           key={item.name}
           onClick={() => onClick?.(item.value)}
           className={cn(
-            "flex items-center justify-center cursor-pointer h-[30px] px-5 flex-1 rounded-3xl transition-all duration-400 text-sm",
+            "flex h-[30px] flex-1 cursor-pointer items-center justify-center rounded-3xl px-5 text-sm transition-all duration-300 hover:bg-white/70 hover:text-primary",
             {
               "bg-white shadow": item.value === value,
               "text-gray-500 opacity-50 pointer-events-none": item.disabled,

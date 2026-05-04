@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import qs from "qs";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PriceProps, UseFiltersInitialValues } from "./use-filters";
 
 interface QueryFilters extends PriceProps {
@@ -54,16 +53,43 @@ export const useSyncFiltersQueryParams = ({
   selectedIngredients,
 }: SyncValues) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const filters = {
-      ...price,
-      sizes: Array.from(sizes),
-      pizzaTypes: Array.from(pizzaTypes),
-      ingredients: Array.from(selectedIngredients),
+    const currentQuery = searchParams.toString();
+    const params = new URLSearchParams(currentQuery);
+
+    const setOrDelete = (key: string, value?: string) => {
+      if (!value) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
     };
 
-    const query = qs.stringify(filters, { arrayFormat: "comma" });
-    router.push(`?${query}`, { scroll: false });
-  }, [price, sizes, pizzaTypes, selectedIngredients, router]);
+    setOrDelete("priceFrom", price.priceFrom?.toString());
+    setOrDelete("priceTo", price.priceTo?.toString());
+    setOrDelete("sizes", Array.from(sizes).join(","));
+    setOrDelete("pizzaTypes", Array.from(pizzaTypes).join(","));
+    setOrDelete("ingredients", Array.from(selectedIngredients).join(","));
+
+    const nextQuery = params.toString();
+
+    if (nextQuery === currentQuery) {
+      return;
+    }
+
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+      scroll: false,
+    });
+  }, [
+    price,
+    sizes,
+    pizzaTypes,
+    selectedIngredients,
+    router,
+    pathname,
+    searchParams,
+  ]);
 };

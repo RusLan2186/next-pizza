@@ -24,13 +24,23 @@ export const ProductCard: React.FC<Props> = ({
 }) => {
   return (
     <div className={className}>
-      <Link href={`/product/${id}`} className="flex flex-col h-full">
-        <div className="flex flex-col items-center justify-center p-6 bg-secondary rounded-lg h-[260px]">
-          <img src={imageUrl} alt={name} width={215} height={215} />
+      <Link href={`/product/${id}`} className="group flex h-full flex-col">
+        <div className="flex h-[260px] flex-col items-center justify-center rounded-lg bg-secondary p-6 transition-all duration-300 group-hover:shadow-md group-hover:shadow-black/10">
+          <img
+            src={imageUrl}
+            alt={name}
+            width={215}
+            height={215}
+            className="transition-transform duration-300 group-hover:scale-[1.015]"
+          />
         </div>
 
         <div className="flex flex-col h-full grow">
-          <Title text={name} size="sm" className="mb-1 mt-3 font-bold" />
+          <Title
+            text={name}
+            size="sm"
+            className="mb-1 mt-3 font-bold transition-colors group-hover:text-primary"
+          />
           <p className="grow text-sm text-gray-400 mb-3">
             {ingredients
               ?.map((ingredient) => ingredient.ingredientName)

@@ -2,7 +2,7 @@ import { prisma } from "@/prisma/prisma-client";
 
 export interface GetSearchParams {
   query: string;
-  sortBy: string;
+  sortBy?: string;
   pizzaTypes: string;
   ingredients: string;
   priceFrom: string;
@@ -31,7 +31,31 @@ const parsePizzaTypes = (value?: string) =>
     .map((item) => pizzaTypeToNumber[item])
     .filter((item) => item !== undefined) ?? [];
 
+type SortValue = "popularity" | "price_asc" | "price_desc";
+
+const getSortValue = (sortBy?: string): SortValue => {
+  if (sortBy === "price_asc" || sortBy === "price_desc") {
+    return sortBy;
+  }
+
+  return "popularity";
+};
+
+const getMinVariantPrice = (product: { variants: Array<{ price: number }> }) =>
+  Math.min(...(product.variants.map((variant) => variant.price) ?? [0]));
+
+const getProductPopularity = (
+  product: { id: number; variants: Array<{ id: number }> },
+  variantPopularity: Map<number, number>,
+) => {
+  return product.variants.reduce(
+    (sum, variant) => sum + (variantPopularity.get(variant.id) ?? 0),
+    0,
+  );
+};
+
 export const findPizzas = async (params: GetSearchParams) => {
+  const sortBy = getSortValue(params.sortBy);
   const sizes = parseNumberValues(params.sizes);
   const pizzaTypes = parsePizzaTypes(params.pizzaTypes);
   const ingredientsIdArr = parseNumberValues(params.ingredients);
@@ -120,9 +144,6 @@ export const findPizzas = async (params: GetSearchParams) => {
   const categories = await prisma.category.findMany({
     include: {
       products: {
-        orderBy: {
-          id: "desc",
-        },
         where: {
           AND: [
             priceFilter,
@@ -136,6 +157,45 @@ export const findPizzas = async (params: GetSearchParams) => {
       },
     },
   });
+
+  let variantPopularity = new Map<number, number>();
+  if (sortBy === "popularity") {
+    const groupedCartItems = await prisma.cartItem.groupBy({
+      by: ["productVariantId"],
+      _sum: {
+        quantity: true,
+      },
+    });
+
+    variantPopularity = new Map(
+      groupedCartItems.map((item) => [
+        item.productVariantId,
+        item._sum.quantity ?? 0,
+      ]),
+    );
+  }
+
+  for (const category of categories) {
+    category.products.sort((a, b) => {
+      if (sortBy === "price_asc") {
+        return getMinVariantPrice(a) - getMinVariantPrice(b);
+      }
+
+      if (sortBy === "price_desc") {
+        return getMinVariantPrice(b) - getMinVariantPrice(a);
+      }
+
+      const popularityDiff =
+        getProductPopularity(b, variantPopularity) -
+        getProductPopularity(a, variantPopularity);
+
+      if (popularityDiff !== 0) {
+        return popularityDiff;
+      }
+
+      return b.id - a.id;
+    });
+  }
 
   return categories;
 };

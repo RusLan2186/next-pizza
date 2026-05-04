@@ -74,7 +74,7 @@ export const SearchInput: React.FC<Props> = ({ className }) => {
         <Search className="absolute top-1/2 translate-y-[-50%] left-3 h-5 text-gray-400" />
 
         <input
-          className="rounded-2xl outline-none w-full bg-gray-50 pl-11"
+          className="w-full rounded-2xl bg-gray-50 pl-11 outline-none transition-colors hover:bg-gray-100 focus:bg-white"
           placeholder="Search..."
           type="text"
           onFocus={onFocusInput}

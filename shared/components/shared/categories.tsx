@@ -175,7 +175,7 @@ export const Categories: React.FC<Props> = ({ categories, className }) => {
           }}
           type="button"
           className={cn(
-            "flex items-center font-bold h-11 rounded-2xl px-3 whitespace-nowrap",
+            "flex h-11 items-center whitespace-nowrap rounded-2xl px-3 font-bold transition-colors hover:bg-white/70 hover:text-primary",
             cat.id === categoryAcriveId &&
               "bg-white shadow-md shadow-grey-200 text-primary",
           )}

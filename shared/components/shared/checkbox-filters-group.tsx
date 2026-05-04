@@ -63,6 +63,9 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
     ? filteredAndSortedItems
     : (defaultIngredients && sortedItems).slice(0, limit);
 
+  const shouldShowToggle =
+    items.length > limit && (!showAll || filteredAndSortedItems.length > 0);
+
   return (
     <div className={className}>
       <p className="font-bold mb-3">{title}</p>
@@ -96,10 +99,10 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
         <h1 className="text-red-500 capitalize">not foundet!!</h1>
       )}
 
-      {items.length > limit && (
+      {shouldShowToggle && (
         <div className={showAll ? "border-t border-t-neutral-100 mt-4" : ""}>
           <button
-            className="text-primary mt-4"
+            className="mt-4 text-primary transition-colors hover:text-primary/80 hover:underline"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "Show less" : "+ Show all"}

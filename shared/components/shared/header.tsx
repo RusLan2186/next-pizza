@@ -39,10 +39,15 @@ export const Header: React.FC<Props> = ({
     <header className={cn("border-b", className)}>
       <Container className="flex items-center justify-between gap-3 py-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0">
+        <Link
+          href="/"
+          className="group flex shrink-0 items-center gap-3 transition-opacity hover:opacity-90"
+        >
           <Image src="/logo.png" alt="logo" width={35} height={35} />
           <div className="hidden sm:flex flex-col gap-0.5">
-            <h1 className="text-xl uppercase font-black">Next pizza</h1>
+            <h1 className="text-xl font-black uppercase transition-colors group-hover:text-primary">
+              Next pizza
+            </h1>
             <p className="text-sm text-gray-400 leading-3">
               Delicious pizza delivered to your door
             </p>
