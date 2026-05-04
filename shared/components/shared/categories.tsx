@@ -55,7 +55,9 @@ export const Categories: React.FC<Props> = ({ categories, className }) => {
       }
 
       const top =
-        window.scrollY + section.getBoundingClientRect().top - getStickyOffset();
+        window.scrollY +
+        section.getBoundingClientRect().top -
+        getStickyOffset();
 
       window.scrollTo({ top, behavior: "smooth" });
     },
@@ -67,7 +69,9 @@ export const Categories: React.FC<Props> = ({ categories, className }) => {
       return;
     }
 
-    const currentIdExists = categories.some((cat) => cat.id === categoryAcriveId);
+    const currentIdExists = categories.some(
+      (cat) => cat.id === categoryAcriveId,
+    );
     if (!currentIdExists) {
       setActiveCategoryId(categories[0].id);
     }
@@ -81,7 +85,9 @@ export const Categories: React.FC<Props> = ({ categories, className }) => {
     const getSections = () =>
       categories
         .map((cat) =>
-          document.querySelector<HTMLElement>(`[data-category-id=\"${cat.id}\"]`),
+          document.querySelector<HTMLElement>(
+            `[data-category-id=\"${cat.id}\"]`,
+          ),
         )
         .filter(Boolean) as HTMLElement[];
 
