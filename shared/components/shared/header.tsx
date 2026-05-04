@@ -25,15 +25,16 @@ export const Header: React.FC<Props> = ({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const shouldAutoOpenAuth = searchParams.get("auth") === "login";
+  const isModalOpen = isAuthModalOpen || shouldAutoOpenAuth;
 
   useEffect(() => {
-    if (searchParams.get("auth") !== "login") {
+    if (!shouldAutoOpenAuth) {
       return;
     }
 
-    setIsAuthModalOpen(true);
     router.replace("/", { scroll: false });
-  }, [searchParams, router]);
+  }, [shouldAutoOpenAuth, router]);
 
   return (
     <header className={cn("border-b", className)}>
@@ -64,7 +65,7 @@ export const Header: React.FC<Props> = ({
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
           <AuthModal
-            open={isAuthModalOpen}
+            open={isModalOpen}
             onClose={() => setIsAuthModalOpen(false)}
           />
           <ProfileButton onClickSignIn={() => setIsAuthModalOpen(true)} />

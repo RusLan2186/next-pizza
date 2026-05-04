@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "../globals.css";
 import { Header } from "@/components/shared";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Next pizza",
@@ -17,7 +18,9 @@ export default function HomeLayout({
 }>) {
   return (
     <main className="min-h-screen">
-      <Header hasSearch hasCart/>
+      <Suspense>
+        <Header hasSearch hasCart />
+      </Suspense>
       {children}
       {modal}
     </main>
