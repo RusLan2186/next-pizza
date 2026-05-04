@@ -77,8 +77,7 @@ export async function createOrder(data: CheckoutFormValues) {
     });
 
     const appUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
-    const resultUrl =
-      process.env.NODE_ENV === "development" ? "http://localhost:3000" : appUrl;
+    const resultUrl = appUrl;
     const payment = createPayment({
       orderId: order.id,
       amount: totalAmount,
@@ -207,9 +206,7 @@ export async function registerUser(body: Prisma.UserCreateInput) {
     });
 
     const appUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
-    const publicAppUrl =
-      process.env.NODE_ENV === "development" ? "http://localhost:3000" : appUrl;
-    const confirmUrl = `${publicAppUrl}/verify-email?code=${code}`;
+    const confirmUrl = `${appUrl}/verify-email?code=${code}`;
 
     await sendEmail(
       targetUser.email,
