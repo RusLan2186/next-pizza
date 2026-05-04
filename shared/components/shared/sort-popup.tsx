@@ -57,9 +57,9 @@ export const SortPopup: React.FC<Props> = ({ className }) => {
   return (
     <Select value={selectedSort} onValueChange={onChangeSort}>
       <SelectTrigger
-        style={{ boxShadow: "none", outline: "none" }}
+        variant="ghost"
         className={cn(
-          "inline-flex h-[52px] w-[170px] max-w-none items-center gap-1 rounded-2xl !border-0 !border-transparent bg-gray-50 px-3 transition-colors hover:bg-gray-100 hover:!border-transparent focus:!border-transparent focus-visible:!border-transparent !ring-0 focus-visible:!ring-0 focus-visible:!ring-transparent data-[state=open]:!border-transparent data-[state=open]:!ring-0 data-[state=open]:shadow-none sm:w-[220px] sm:gap-2 sm:px-5",
+          "inline-flex w-[170px] max-w-none items-center gap-1 rounded-2xl bg-gray-50 px-3 hover:bg-gray-100 sm:w-[220px] sm:gap-2 sm:px-5",
           className,
         )}
       >
