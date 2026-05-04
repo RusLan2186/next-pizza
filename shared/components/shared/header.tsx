@@ -81,7 +81,11 @@ export const Header: React.FC<Props> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
-          <Suspense fallback={<ProfileButton onClickSignIn={() => setIsAuthModalOpen(true)} />}>
+          <Suspense
+            fallback={
+              <ProfileButton onClickSignIn={() => setIsAuthModalOpen(true)} />
+            }
+          >
             <AuthModalController
               isOpen={isAuthModalOpen}
               onOpen={() => setIsAuthModalOpen(true)}
