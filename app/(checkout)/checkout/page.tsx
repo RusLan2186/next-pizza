@@ -39,6 +39,12 @@ export default function CheckoutPage() {
   });
   const { data: session } = useSession();
 
+  useEffect(() => {
+    if (!loading && items.length === 0) {
+      router.replace("/");
+    }
+  }, [loading, items.length, router]);
+
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: {

@@ -250,14 +250,22 @@ export async function registerUser(body: Prisma.UserCreateInput) {
     const appUrl = getPublicAppUrl();
     const confirmUrl = `${appUrl}/verify-email?code=${code}`;
 
-    await sendEmail(
-      targetUser.email,
-      "Next Pizza | Confirm your account ",
-      VerificationUserTemplate({
-        code,
-        confirmUrl,
-      }),
-    );
+    try {
+      await sendEmail(
+        targetUser.email,
+        "Next Pizza | Confirm your account ",
+        VerificationUserTemplate({
+          code,
+          confirmUrl,
+        }),
+      );
+    } catch (emailError) {
+      console.error("[Create User] Failed to send verification email:", emailError);
+      throw new Error(
+        "Account created, but we could not send a verification email. " +
+        "Please contact support or try again later.",
+      );
+    }
   } catch (error) {
     console.error("[Create User] Error registering user:", error);
     throw error;

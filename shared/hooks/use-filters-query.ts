@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PriceProps, UseFiltersInitialValues } from "./use-filters";
 
@@ -56,8 +56,16 @@ export const useSyncFiltersQueryParams = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Храним searchParams в ref, чтобы читать актуальное значение внутри эффекта
+  // без добавления searchParams в зависимости — иначе при двух экземплярах
+  // Filters (sidebar + drawer) возникает бесконечный цикл перерендеров.
+  const searchParamsRef = useRef(searchParams);
   useEffect(() => {
-    const currentQuery = searchParams.toString();
+    searchParamsRef.current = searchParams;
+  });
+
+  useEffect(() => {
+    const currentQuery = searchParamsRef.current.toString();
     const params = new URLSearchParams(currentQuery);
 
     const setOrDelete = (key: string, value?: string) => {
@@ -83,13 +91,5 @@ export const useSyncFiltersQueryParams = ({
     router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
       scroll: false,
     });
-  }, [
-    price,
-    sizes,
-    pizzaTypes,
-    selectedIngredients,
-    router,
-    pathname,
-    searchParams,
-  ]);
+  }, [price, sizes, pizzaTypes, selectedIngredients, router, pathname]);
 };
